@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Listening Test — One More Round</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3a4657; --muted:#7a8794; --line:#e8ddcb;
+    --panel:#fdf8ee; --cream:#fbf3d9;
+    --global:#3f8fca; --global2:#2e79ab; --global-soft:#e4f0fa;
+    --local:#8a5bb0; --local2:#6f4a9c; --local-soft:#f1e9fa;
+    --orange:#f0a020; --coral:#e8788c; --gold:#f0b23e; --sage:#3fa787;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @keyframes babybob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(2deg);}}
+  body{font-family:'Quicksand',sans-serif; color:var(--ink); line-height:1.55;
+    background:
+      radial-gradient(1000px 640px at 8% -5%, #e4f0fa 0%, transparent 55%),
+      radial-gradient(1000px 640px at 96% 4%, #f1e9fa 0%, transparent 55%),
+      linear-gradient(180deg, #eef4fb 0%, #f8f1e3 100%);
+    background-attachment:fixed;}
+
+  /* floating background notes + now-playing badge (shared) */
+  @keyframes fbob{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-16px) rotate(6deg);}}
+  .notes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .notes span{position:absolute; opacity:.34; animation:fbob 6s infinite ease-in-out;}
+  .now-badge{position:fixed; top:clamp(10px,1.6vh,16px); right:clamp(12px,2vw,20px); z-index:30; display:flex; align-items:center; gap:9px;
+    background:rgba(253,248,238,.92); border:1px solid var(--line); border-radius:999px; padding:6px 15px 6px 12px; cursor:pointer;
+    box-shadow:0 5px 16px rgba(120,150,190,.16); backdrop-filter:blur(4px); user-select:none;}
+  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px; flex:0 0 auto;}
+  .now-badge .eqbars i{width:3px; background:var(--global); border-radius:1px; animation:nbeq .9s ease-in-out infinite;}
+  .now-badge .eqbars i:nth-child(2){animation-delay:.2s; background:var(--local);}
+  .now-badge .eqbars i:nth-child(3){animation-delay:.4s; background:var(--orange);}
+  .now-badge .eqbars i:nth-child(4){animation-delay:.15s; background:var(--coral);}
+  .now-badge.paused .eqbars i{animation-play-state:paused;}
+  .now-badge .nb-txt{font-size:.72rem; font-weight:700; color:var(--ink); line-height:1;}
+  .now-badge .nb-txt small{display:block; font-weight:600; color:var(--muted); font-size:.6rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;}
+  @keyframes nbeq{0%,100%{height:3px;}50%{height:14px;}}
+  @media(max-width:620px){.now-badge{display:none;}}
+
+  .stage-wrap{position:relative; z-index:1; min-height:100vh; height:100vh; max-height:100vh; overflow:hidden;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:clamp(12px,2.4vh,24px) clamp(16px,3vw,40px);}
+  .col{width:100%; max-width:1040px; display:grid; grid-template-columns:auto 1fr; gap:clamp(16px,3vw,40px); align-items:center;}
+  @media(max-width:820px){.col{grid-template-columns:1fr; gap:14px; justify-items:center;}}
+
+  /* baby column — framed as a portrait at the same scale as the parents on the Score sheet */
+  .baby-side{text-align:center; display:flex; flex-direction:column; align-items:center;}
+  .baby-pic{width:clamp(120px,16vh,150px); height:clamp(120px,16vh,150px); border-radius:50%; overflow:hidden;
+    background:var(--cream); box-shadow:0 6px 18px rgba(0,0,0,.16); animation:babybob 3s ease-in-out infinite; display:block;}
+  .baby-pic img{width:100%; height:100%; object-fit:cover; display:block;}
+  .baby-say{margin-top:8px; font-family:'Caveat',cursive; font-size:clamp(1.2rem,2.4vw,1.6rem); color:var(--local2); line-height:1.15; max-width:260px;}
+  .score-pill{margin-top:8px; display:inline-block; background:var(--cream); border:1px solid var(--line); border-radius:999px;
+    padding:5px 15px; font-size:.8rem; font-weight:700; color:var(--ink);}
+
+  /* quiz column */
+  .qhead{text-align:left; margin-bottom:clamp(8px,1.4vh,12px);}
+  .qhead .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--global2); font-size:clamp(.82rem,1.5vw,1rem);}
+  .qhead h1{font-family:'Caveat',cursive; font-size:clamp(2rem,4.4vw,3rem); line-height:1; color:var(--ink); margin:1px 0 4px;}
+  .qhead p{color:#4a5568; font-size:clamp(.82rem,1.5vw,.96rem); max-width:520px;}
+
+  .quiz-card{background:var(--global-soft); border:1px solid #cfe2f2; border-radius:18px;
+    box-shadow:0 8px 24px rgba(120,150,190,.10); padding:clamp(12px,2vh,18px) clamp(15px,2.4vw,24px);}
+  .qitem + .qitem{border-top:1px dashed #cfe2f2; margin-top:clamp(9px,1.5vh,13px); padding-top:clamp(9px,1.5vh,13px);}
+  .qitem .qlabel{display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+  .qitem .qnum{font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:var(--global2); font-size:.86rem;}
+  .qitem .qmini{font-size:1.1rem;}
+  .qq{color:#3a4657; font-size:clamp(.82rem,1.5vw,.96rem); line-height:1.4;}
+  .qq b{color:var(--ink);}
+  .qopts{display:flex; gap:clamp(7px,1.2vw,11px); flex-wrap:wrap; margin-top:clamp(7px,1.3vh,11px);}
+  .qopt{border:2px solid #cfe2f2; background:#fff; border-radius:999px; padding:7px 17px; cursor:pointer; font:inherit;
+    font-weight:800; color:var(--global2); font-size:clamp(.78rem,1.3vw,.9rem); transition:.18s;}
+  .qopt:hover{transform:translateY(-2px); border-color:var(--global); box-shadow:0 6px 14px rgba(63,143,202,.16);}
+  .qopt:disabled{cursor:default;}
+  .qopt.win{border-color:var(--sage); background:#eaf6ef; color:#2e7d32;}
+  .qopt.lose{border-color:var(--coral); background:#fbe9ee; color:#c04a63;}
+  .qexpl{display:none; margin-top:8px; font-size:clamp(.76rem,1.35vw,.88rem); color:#4a5568; line-height:1.4;}
+  .qexpl.on{display:block;} .qexpl b{color:var(--ink);}
+
+  .foot{grid-column:1/-1; text-align:center; margin-top:clamp(8px,1.6vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
+  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
+  .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
+  .foot a.next{color:var(--global2);}
+
+  @media(max-height:820px), (max-width:820px){
+    .stage-wrap{height:auto; max-height:none; overflow:visible; min-height:100vh;}
+  }
+</style>
+</head>
+<body>
+
+<div class="notes">
+  <span style="top:12%;left:8%;color:#3f8fca;font-size:1.4rem;">♪</span>
+  <span style="top:20%;right:10%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
+  <span style="top:66%;left:5%;color:#f0a020;font-size:1.5rem;animation-delay:1.2s;">♩</span>
+  <span style="top:78%;right:7%;color:#e8788c;font-size:1.3rem;animation-delay:.5s;">♬</span>
+  <span style="top:44%;left:3%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
+  <span style="top:32%;right:4%;color:#f0b23e;font-size:1.2rem;animation-delay:2.3s;">♫</span>
+</div>
+
+<div class="now-badge" onclick="this.classList.toggle('paused')" title="ambient score">
+  <span class="eqbars"><i></i><i></i><i></i><i></i></span>
+  <span class="nb-txt"><small>Now Playing</small>The Listening Test</span>
+</div>
+
+<section class="stage-wrap">
+  <div class="col">
+
+    <!-- baby, hosting the round -->
+    <div class="baby-side">
+      <div class="baby-pic"><img src="assets/baby_singer.png" alt="The baby, waiting for a name"></div>
+      <div class="baby-say">"Before they name me… can <b>you</b> read the charts?"</div>
+      <div class="score-pill" id="scorePill">🎧 0 / 4 correct</div>
+    </div>
+
+    <!-- the questions -->
+    <div>
+      <div class="qhead">
+        <div class="chapter-tag">~ The Listening Test ~</div>
+        <h1>One More Round</h1>
+        <p>Four quick ones about the songs behind the names. No hints — just what your ear already knows.</p>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qitem" id="q1">
+          <div class="qlabel"><span class="qmini">😈</span><span class="qnum">Q1</span></div>
+          <div class="qq">One name sat at <b>zero babies a year</b> for decades, then a hit show rebranded the devil as a charming lead and it broke through. Which name?</div>
+          <div class="qopts">
+            <button class="qopt" onclick="answer(this,'q1',0)">Damien</button>
+            <button class="qopt" onclick="answer(this,'q1',1)">Lucifer</button>
+            <button class="qopt" onclick="answer(this,'q1',2)">Judas</button>
+          </div>
+          <div class="qexpl" id="q1expl"></div>
+        </div>
+
+        <div class="qitem" id="q2">
+          <div class="qlabel"><span class="qmini">🎬</span><span class="qnum">Q2</span></div>
+          <div class="qq">One of these did <b>not exist as a name at all</b> until a TV show invented it. Which one?</div>
+          <div class="qopts">
+            <button class="qopt" onclick="answer(this,'q2',0)">Emma</button>
+            <button class="qopt" onclick="answer(this,'q2',1)">Khaleesi</button>
+            <button class="qopt" onclick="answer(this,'q2',2)">Oliver</button>
+          </div>
+          <div class="qexpl" id="q2expl"></div>
+        </div>
+
+        <div class="qitem" id="q3">
+          <div class="qlabel"><span class="qmini">🔊</span><span class="qnum">Q3</span></div>
+          <div class="qq">Parents nearly <b>stopped</b> using this name after a talking speaker launched with it in 2014. Which name got overwritten by a gadget?</div>
+          <div class="qopts">
+            <button class="qopt" onclick="answer(this,'q3',0)">Alexa</button>
+            <button class="qopt" onclick="answer(this,'q3',1)">Alina</button>
+            <button class="qopt" onclick="answer(this,'q3',2)">Alessia</button>
+          </div>
+          <div class="qexpl" id="q3expl"></div>
+        </div>
+
+        <div class="qitem" id="q4">
+          <div class="qlabel"><span class="qmini">🌍</span><span class="qnum">Q4</span></div>
+          <div class="qq">In the 1930s a baby name took about <b>65 years</b> to spread across the English-speaking world. Today, how long?</div>
+          <div class="qopts">
+            <button class="qopt" onclick="answer(this,'q4',0)">Still ~65 years</button>
+            <button class="qopt" onclick="answer(this,'q4',1)">About 40 years</button>
+            <button class="qopt" onclick="answer(this,'q4',2)">Under 10 years</button>
+          </div>
+          <div class="qexpl" id="q4expl"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span class="pageno">The Listening Test · 5 / 7</span>
+      <a href="cormac.html">↩ back to Side B</a>
+      <a class="next" href="encore.html">now, name the baby →</a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  var QUIZ = {
+    q1:{correct:1, expl:'🎧 <b>Lucifer.</b> For decades it sat at essentially zero, too loaded a name. Then the TV show <em>Lucifer</em> (2016) recast the devil as a charming lead and it broke onto the charts. A hit show can rewrite a name overnight.'},
+    q2:{correct:1, expl:'📺 <b>Khaleesi.</b> Emma and Oliver are centuries-old classics, but Khaleesi did not exist as a name until <em>Game of Thrones</em> minted the title. A pure reference.'},
+    q3:{correct:0, expl:'🔊 <b>Alexa.</b> It was climbing the charts until 2014, when Amazon\'s Echo took the name, and parents dropped it almost overnight (down about 92%). A global name a gadget can overwrite.'},
+    q4:{correct:2, expl:'🌍 <b>Under 10 years.</b> Shared media, from TV to streaming, collapsed the time a name needs to cross the whole Anglosphere, from roughly 65 years down to under 10.'}
+  };
+  var score=0, answered=0;
+  function answer(btn, id, idx){
+    var card=document.getElementById(id);
+    if(card.dataset.done) return;
+    card.dataset.done='1'; answered++;
+    var correct=QUIZ[id].correct;
+    card.querySelectorAll('.qopt').forEach(function(o,i){
+      o.disabled=true;
+      if(i===correct) o.classList.add('win');
+      else if(i===idx) o.classList.add('lose');
+    });
+    var expl=document.getElementById(id+'expl');
+    expl.innerHTML=QUIZ[id].expl; expl.classList.add('on');
+    var right = idx===correct;
+    if(right) score++;
+    ping(right?'sfx_correct':'sfx_wrong');
+    document.getElementById('scorePill').textContent='🎧 '+score+' / 4 correct';
+  }
+  var _cache={};
+  function ping(name){
+    try{ var a=_cache[name]||(_cache[name]=new Audio('assets/'+name+'.wav')); a.currentTime=0; a.play().catch(function(){}); }catch(e){}
+  }
+</script>
+</body>
+</html>
