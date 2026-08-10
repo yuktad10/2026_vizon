@@ -1,0 +1,10 @@
+# Serve the ./static folder as real files at /app/static/<path>.
+# The whole data-story (flow.html + its 7 sub-pages, lookup.json, assets/, audio)
+# lives there, so every relative fetch, sub-iframe, and audio load resolves
+# against a real origin exactly like it does under `python -m http.server`.
+[server]
+enableStaticServing = true
+
+[theme]
+base = "light"
+backgroundColor = "#eef4fb"
