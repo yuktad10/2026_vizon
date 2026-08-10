@@ -113,14 +113,14 @@
         <span class="voice-hint">play me ♪</span>
       </div>
     </div>
-    <div class="byline">In a house in <b>Ireland</b>, every parent is a composer and every name a song.<br>Tonight two of them cannot settle on the tune, so they argue in <b>data</b>.<br>Why do some names travel the whole English-speaking world while others never leave one town? Same language, eight countries — wildly different taste.</div>
+    <div class="byline">Why do some names travel the whole English-speaking world while others never leave one town? Same language, eight countries — wildly different taste.<br>In a house in <b>Ireland</b>, every parent is a composer and every name a song.<br>Tonight two of them cannot settle on the tune, so they argue in <b>data</b>.</div>
 
     <a href="score.html" class="open-hint">Open the score<span>↓</span></a>
   </div>
 </section>
 
 <script>
-  // Baby-voice intro — plays a pre-generated pitched-up mp3 (baby_A.mp3).
+  // Baby-voice intro: play the recorded narrator clip (assets/baby_A.mp3). Click to play, click to stop.
   (function(){
     var btn  = document.getElementById('voiceBtn');
     var icon = document.getElementById('voiceIcon');
@@ -128,15 +128,25 @@
     var STOP = 'M6 6h12v12H6z';
     var audio = new Audio('assets/baby_A.mp3');
     audio.preload = 'auto';
-    // Slow the baby voice down (it was too fast) while keeping its high baby pitch.
-    var RATE = 0.75;
-    function slow(){ audio.playbackRate = RATE; audio.preservesPitch = true; audio.mozPreservesPitch = true; audio.webkitPreservesPitch = true; }
-    slow();
-    var playing = false;
-    function stop(){ audio.pause(); audio.currentTime=0; playing=false; btn.classList.remove('playing'); icon.setAttribute('d',PLAY); }
-    function play(){ slow(); audio.currentTime=0; audio.play().catch(function(){}); playing=true; btn.classList.add('playing'); icon.setAttribute('d',STOP); }
-    audio.addEventListener('ended', stop);
-    btn.addEventListener('click', function(){ if(playing) stop(); else play(); });
+    function reset(){
+      btn.classList.remove('playing');
+      icon.setAttribute('d', PLAY);
+    }
+    function stop(){
+      audio.pause();
+      try{ audio.currentTime = 0; }catch(e){}
+      reset();
+    }
+    function play(){
+      // one sound at a time: stop any other page audio first
+      if(window.speechSynthesis) speechSynthesis.cancel();
+      audio.currentTime = 0;
+      btn.classList.add('playing');
+      icon.setAttribute('d', STOP);
+      audio.play().catch(function(){ reset(); });
+    }
+    audio.addEventListener('ended', reset);
+    btn.addEventListener('click', function(){ if(btn.classList.contains('playing')) stop(); else play(); });
     window.addEventListener('pagehide', stop);
   })();
 </script>
