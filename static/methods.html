@@ -56,6 +56,13 @@
   .stat .v{font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1rem,1.9vw,1.25rem); color:var(--global2); line-height:1;}
   .stat .l{font-size:.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-top:2px;}
 
+  /* the two of us */
+  .authors{display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.4vw,16px); margin-top:10px;}
+  .author{margin:0; text-align:center;}
+  .author img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:12px;
+    background:var(--cream); box-shadow:0 5px 14px rgba(120,150,190,.16); border:1px solid var(--line); display:block;}
+  .author figcaption{margin-top:6px; font-family:'Caveat',cursive; font-size:clamp(1.1rem,1.8vw,1.35rem); color:var(--local2); line-height:1;}
+
   .foot{flex:0 0 auto; text-align:center; margin-top:clamp(8px,1.4vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
   .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
   .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
@@ -114,14 +121,27 @@
         </div>
       </div>
 
-<!-- 2 · Why this story -->
-<div class="lncard c2">
-  <div class="ln-h"><span class="ic">🎼</span><span class="t">Why We Wrote It — the idea</span></div>
-  <div class="ln-b">
-    <p>Everyone has a story about their name — where it came from, whether it was common or rare, how it felt to grow up with it. That everyday intimacy is exactly what pulled us toward this.</p>
-    <p>Baby names sit at a rare crossing point: deeply personal, yet recorded as clean public data across eight countries and nearly three decades. We used them to ask a simple question with a surprisingly rich answer — when does a name belong to the whole world, and when does it belong to just one place?</p>
-  </div>
-</div>
+      <!-- 2 · Why this story -->
+      <div class="lncard c2">
+        <div class="ln-h"><span class="ic">🎼</span><span class="t">Why We Wrote It — the idea</span></div>
+        <div class="ln-b">
+          <p>Everyone has a story about their name — where it came from, whether it was common or rare, how it felt to grow up with it. That everyday intimacy is exactly what pulled us toward this.</p>
+          <p>Baby names sit at a rare crossing point: deeply personal, yet recorded as clean public data across eight countries and nearly three decades. We used them to ask a simple question with a surprisingly rich answer — when does a name belong to the whole world, and when does it belong to just one place?</p>
+
+          <!-- the two of us -->
+          <div class="authors">
+            <figure class="author">
+              <img src="assets/yuktad.png" alt="Yukta">
+              <figcaption>Yukta</figcaption>
+            </figure>
+            <figure class="author">
+              <img src="assets/Vaishupa.png" alt="Vaishnavee">
+              <figcaption>Vaishnavee</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
       <!-- 3 · Tools & tech -->
       <div class="lncard c3">
         <div class="ln-h"><span class="ic">🎛️</span><span class="t">The Studio — how it was built</span></div>
