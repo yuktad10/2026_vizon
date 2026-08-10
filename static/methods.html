@@ -58,10 +58,11 @@
 
   /* the two of us — small square avatars */
   .authors{display:flex; justify-content:center; gap:clamp(18px,3vw,34px); margin-top:10px;}
-  .author{margin:0; text-align:center;}
+  .author{margin:0; text-align:center; max-width:160px;}
   .author img{width:clamp(60px,8vh,84px); height:clamp(60px,8vh,84px); aspect-ratio:1/1; object-fit:cover; border-radius:12px;
     background:var(--cream); box-shadow:0 5px 14px rgba(120,150,190,.18); border:1px solid var(--line); display:block; margin:0 auto;}
   .author figcaption{margin-top:5px; font-family:'Caveat',cursive; font-size:clamp(1rem,1.6vw,1.2rem); color:var(--local2); line-height:1;}
+  .author .au-mean{margin-top:3px; font-family:'Fraunces',serif; font-style:italic; font-size:clamp(.62rem,1.1vw,.74rem); color:#5a6472; line-height:1.25;}
 
   .foot{flex:0 0 auto; text-align:center; margin-top:clamp(8px,1.4vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
   .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
@@ -133,10 +134,12 @@
             <figure class="author">
               <img src="assets/yuktad.jpg" alt="Yukta">
               <figcaption>Yukta</figcaption>
+              <div class="au-mean">A name meaning united, connected, and skilled.</div>
             </figure>
             <figure class="author">
               <img src="assets/Vaishupa.jpg" alt="Vaishnavee">
               <figcaption>Vaishnavee</figcaption>
+              <div class="au-mean">Inspired by the 1998 film Jeans.</div>
             </figure>
           </div>
         </div>
@@ -174,7 +177,7 @@
 
     <div class="foot">
       <span class="pageno">Liner Notes · Closing</span>
-      <a href="encore.html">↩ back to the Encore</a>
+      <a href="quiz.html">↩ back to the Listening Test</a>
     </div>
   </div>
 </section>
