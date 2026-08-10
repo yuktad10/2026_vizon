@@ -21,9 +21,11 @@
   <iframe class="page aria"    src="aria.html"       title="Aria"   scrolling="no" allow="autoplay"></iframe>
   <iframe class="page cormac"  src="cormac.html"    title="Cormac" scrolling="no"></iframe>
   <iframe class="page quiz"    src="quiz.html"      title="Listening Test" scrolling="no" allow="autoplay"></iframe>
+  <iframe class="page encore"  src="encore.html"    title="Encore" scrolling="no"></iframe>
   <iframe class="page methods" src="methods.html"   title="Liner Notes" scrolling="no"></iframe>
   <script>
-    const [coverF, scoreF, stageF, ariaF, cormacF, quizF, methodsF] = document.querySelectorAll('iframe');
+    // NOTE: 8 iframes now — encoreF added so the encore wiring below is defined.
+    const [coverF, scoreF, stageF, ariaF, cormacF, quizF, encoreF, methodsF] = document.querySelectorAll('iframe');
     // simple single-target wiring: every matched link in `frame` scrolls to `target`
     function link(frame, target, selector){
       frame.addEventListener('load', () => {
