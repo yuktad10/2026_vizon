@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liner Notes · A Duet of Names</title>
+<title>The Finale — Listening Test & The Encore</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
 <style>
@@ -15,168 +15,548 @@
     --orange:#f0a020; --coral:#e8788c; --gold:#f0b23e; --sage:#3fa787;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Quicksand',sans-serif; color:var(--ink); line-height:1.5;
+  html{scroll-behavior:smooth;}
+  @keyframes babybob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(2deg);}}
+
+  /* ── background taken verbatim from The Encore ── */
+  body{font-family:'Quicksand',sans-serif; color:var(--ink); line-height:1.55;
     background:
-      radial-gradient(1100px 700px at 85% -5%, #e4f0fa 0%, transparent 60%),
-      radial-gradient(900px 600px at 5% 12%, #f1e9fa 0%, transparent 55%),
-      linear-gradient(180deg, #f2ecfa 0%, #eef4fb 100%);
-    background-attachment:fixed;}
+      radial-gradient(1000px 640px at 8% -5%, #e4f0fa 0%, transparent 55%),
+      radial-gradient(1000px 640px at 96% 4%, #f1e9fa 0%, transparent 55%),
+      linear-gradient(180deg, #eef4fb 0%, #f8f1e3 100%);
+    background-attachment:fixed; min-height:100vh;}
 
-  .sheet{height:100vh; max-height:100vh; width:100%; display:flex; flex-direction:column;
-    padding:clamp(10px,2.4vh,24px) clamp(14px,3vw,30px); overflow:hidden; position:relative; z-index:1;}
-  .inner{flex:1; max-width:1180px; width:100%; margin:0 auto; display:flex; flex-direction:column; min-height:0;}
+  /* the two composers flank the page (images taken from The Encore) */
+  .composer{position:fixed; bottom:0; height:min(78vh,760px); width:auto; z-index:0; pointer-events:none; opacity:.95;}
+  .composer.aria{left:max(-40px, calc((50vw - 560px - 370px)/2)); filter:drop-shadow(0 10px 20px rgba(120,150,190,.22));}
+  .composer.cormac{right:max(-40px, calc((50vw - 560px - 412px)/2)); filter:drop-shadow(0 10px 20px rgba(150,120,190,.22));}
+  @media(max-width:1360px){.composer{opacity:.85; height:min(68vh,640px);} .composer.aria{left:-34px;} .composer.cormac{right:-34px;}}
+  @media(max-width:1080px){.composer{opacity:.10;}}
 
-  .head{text-align:center; flex:0 0 auto;}
-  .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--local2); font-size:clamp(.82rem,1.5vw,1rem);}
-  h1.title{font-family:'Caveat',cursive; font-size:clamp(2rem,4.6vw,3.1rem); line-height:1; margin:1px 0 4px; color:var(--ink);}
-  .lead{color:#4a5568; max-width:720px; margin:0 auto; font-size:clamp(.82rem,1.55vw,1rem); line-height:1.45;}
-
-  /* liner-notes 4-card grid */
-  .notes-grid{flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
-    gap:clamp(10px,1.6vw,18px); margin-top:clamp(10px,2vh,18px);}
-  @media(max-width:820px){.notes-grid{grid-template-columns:1fr; grid-template-rows:none;}}
-  .lncard{background:var(--panel); border:1px solid var(--line); border-radius:16px;
-    padding:clamp(12px,1.8vh,18px) clamp(14px,1.8vw,22px); box-shadow:0 8px 24px rgba(120,150,190,.10);
-    display:flex; flex-direction:column; min-height:0; border-top:4px solid var(--global);}
-  .lncard.c1{border-top-color:var(--global);}
-  .lncard.c2{border-top-color:var(--local);}
-  .lncard.c3{border-top-color:var(--sage);}
-  .lncard.c4{border-top-color:var(--orange);}
-  .ln-h{display:flex; align-items:center; gap:9px; flex:0 0 auto; margin-bottom:clamp(6px,1vh,10px);}
-  .ln-h .ic{font-size:1.5rem;}
-  .ln-h .t{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(1rem,1.9vw,1.22rem); color:var(--ink);}
-  .ln-b{font-size:clamp(.74rem,1.35vw,.87rem); color:#4a5568; line-height:1.5; overflow:auto;}
-  .ln-b b{color:var(--ink);}
-  .ln-b p{margin:0 0 7px;}
-  .ln-b p:last-child{margin-bottom:0;}
-  .ln-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;}
-  .chip{font-size:.66rem; font-weight:700; padding:3px 10px; border-radius:999px; background:#fff; border:1px solid var(--line); color:#5a6472;}
-  .stat-row{display:flex; gap:clamp(8px,1.4vw,16px); margin:4px 0 6px; flex-wrap:wrap;}
-  .stat{background:#fff; border:1px solid var(--line); border-radius:10px; padding:7px 12px; text-align:center; flex:1; min-width:70px;}
-  .stat .v{font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1rem,1.9vw,1.25rem); color:var(--global2); line-height:1;}
-  .stat .l{font-size:.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-top:2px;}
-
-  /* the two of us — small square avatars */
-  .authors{display:flex; justify-content:center; gap:clamp(18px,3vw,34px); margin-top:10px;}
-  .author{margin:0; text-align:center;}
-  .author img{width:clamp(60px,8vh,84px); height:clamp(60px,8vh,84px); aspect-ratio:1/1; object-fit:cover; border-radius:12px;
-    background:var(--cream); box-shadow:0 5px 14px rgba(120,150,190,.18); border:1px solid var(--line); display:block; margin:0 auto;}
-  .author figcaption{margin-top:5px; font-family:'Caveat',cursive; font-size:clamp(1rem,1.6vw,1.2rem); color:var(--local2); line-height:1;}
-
-  .foot{flex:0 0 auto; text-align:center; margin-top:clamp(8px,1.4vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
-  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
-  .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
-
+  /* floating background notes + now-playing badge (shared) */
   @keyframes fbob{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-16px) rotate(6deg);}}
-  .bgnotes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
-  .bgnotes span{position:absolute; opacity:.34; animation:fbob 6s infinite ease-in-out;}
+  .notes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .notes span{position:absolute; opacity:.34; animation:fbob 6s infinite ease-in-out;}
   .now-badge{position:fixed; top:clamp(10px,1.6vh,16px); right:clamp(12px,2vw,20px); z-index:30; display:flex; align-items:center; gap:9px;
     background:rgba(253,248,238,.92); border:1px solid var(--line); border-radius:999px; padding:6px 15px 6px 12px; cursor:pointer;
     box-shadow:0 5px 16px rgba(120,150,190,.16); backdrop-filter:blur(4px); user-select:none;}
-  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px;}
+  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px; flex:0 0 auto;}
   .now-badge .eqbars i{width:3px; background:var(--global); border-radius:1px; animation:nbeq .9s ease-in-out infinite;}
   .now-badge .eqbars i:nth-child(2){animation-delay:.2s; background:var(--local);}
   .now-badge .eqbars i:nth-child(3){animation-delay:.4s; background:var(--orange);}
   .now-badge .eqbars i:nth-child(4){animation-delay:.15s; background:var(--coral);}
+  .now-badge.paused .eqbars i{animation-play-state:paused;}
   .now-badge .nb-txt{font-size:.72rem; font-weight:700; color:var(--ink); line-height:1;}
   .now-badge .nb-txt small{display:block; font-weight:600; color:var(--muted); font-size:.6rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;}
   @keyframes nbeq{0%,100%{height:3px;}50%{height:14px;}}
   @media(max-width:620px){.now-badge{display:none;}}
-  @media(max-height:600px),(max-width:820px){.sheet{height:auto; max-height:none; overflow:visible;} .ln-b{overflow:visible;}}
+
+  .stage-wrap{position:relative; z-index:1; min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:clamp(14px,2.6vh,26px) clamp(16px,3vw,40px);}
+
+  /* page header */
+  .page-hero{text-align:center; margin-bottom:clamp(12px,2vh,20px); max-width:760px;}
+  .page-hero .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--local2); font-size:clamp(.82rem,1.5vw,1rem);}
+  .page-hero h1{font-family:'Caveat',cursive; font-size:clamp(2.1rem,4.8vw,3.2rem); line-height:.98; color:var(--local2);
+    display:flex; align-items:center; justify-content:center; gap:.3em; margin:1px 0 6px;}
+  .page-hero p{color:#4a5568; font-size:clamp(.82rem,1.5vw,.96rem); line-height:1.4; margin:0 auto;}
+  .page-hero p b.g{color:var(--global2);} .page-hero p b.l{color:var(--local2);}
+  .flip-hint{margin-top:6px; font-size:clamp(.72rem,1.3vw,.82rem); color:var(--muted); font-style:italic;}
+
+  /* ── the two flip cards ── */
+  .deck{display:grid; grid-template-columns:1fr 1fr; gap:clamp(18px,3vw,40px); width:100%; max-width:1080px; align-items:stretch;}
+  @media(max-width:900px){.deck{grid-template-columns:1fr; gap:22px;}}
+
+  .flip-card{perspective:1800px; min-height:clamp(420px,64vh,620px);}
+  .flip-inner{position:relative; width:100%; height:100%; min-height:inherit;
+    transition:transform .7s cubic-bezier(.4,.2,.2,1); transform-style:preserve-3d;}
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .face{position:absolute; inset:0; -webkit-backface-visibility:hidden; backface-visibility:hidden;
+    border-radius:22px; overflow:hidden; display:flex; flex-direction:column;}
+  .face.back{transform:rotateY(180deg);}
+
+  /* front faces — teaser cards */
+  .front{cursor:pointer; align-items:center; justify-content:center; text-align:center; gap:14px;
+    padding:clamp(20px,4vh,40px) clamp(18px,3vw,34px); border:1px solid #d7e6f4;
+    box-shadow:0 14px 38px rgba(120,150,190,.16); transition:box-shadow .2s, transform .2s;}
+  .flip-card .front:hover{transform:translateY(-4px); box-shadow:0 20px 48px rgba(120,150,190,.24);}
+  .front.left{background:linear-gradient(150deg,var(--global-soft),#eef4fb 60%,#f6fbff);}
+  .front.right{background:linear-gradient(150deg,#fbf6ff,#f3ecfb 45%,var(--local-soft));}
+  .front .badge{font-size:clamp(.62rem,1.2vw,.74rem); letter-spacing:2.5px; text-transform:uppercase; font-weight:800;}
+  .front.left .badge{color:var(--global2);} .front.right .badge{color:var(--local2);}
+  .front .emoji{font-size:clamp(3rem,8vw,4.4rem); line-height:1; animation:babybob 3.4s ease-in-out infinite;}
+  .front .front-pic{width:clamp(110px,15vh,140px); height:clamp(110px,15vh,140px); border-radius:50%; overflow:hidden;
+    background:var(--cream); box-shadow:0 6px 18px rgba(0,0,0,.16); animation:babybob 3.4s ease-in-out infinite;}
+  .front .front-pic img{width:100%; height:100%; object-fit:cover; display:block;}
+  .front h2{font-family:'Caveat',cursive; font-size:clamp(1.9rem,3.8vw,2.6rem); line-height:1; color:var(--ink);}
+  .front.left h2{color:var(--global2);} .front.right h2{color:var(--local2);}
+  .front p{color:#5a6472; font-size:clamp(.82rem,1.5vw,.95rem); max-width:340px;}
+  .front .flip-cta{margin-top:2px; border:none; cursor:pointer; font:inherit; font-weight:800; color:#fff;
+    font-size:clamp(.82rem,1.4vw,.95rem); padding:9px 24px; border-radius:999px; transition:.18s;}
+  .front.left .flip-cta{background:linear-gradient(135deg,var(--global),var(--global2)); box-shadow:0 7px 18px rgba(63,143,202,.28);}
+  .front.right .flip-cta{background:linear-gradient(135deg,var(--local),var(--local2)); box-shadow:0 7px 18px rgba(138,91,176,.28);}
+  .front .flip-cta:hover{transform:translateY(-2px);}
+
+  /* back faces — the actual activities, scrollable inside the card */
+  .back{background:var(--panel); border:1px solid #d7e6f4; box-shadow:0 14px 38px rgba(120,150,190,.16);}
+  .back-scroll{flex:1; overflow-y:auto; padding:clamp(14px,2.2vh,22px) clamp(15px,2.4vw,24px) clamp(48px,7vh,58px);}
+  .back-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:clamp(8px,1.4vh,12px);}
+  .back-head .bt{font-family:'Fraunces',serif; font-style:italic; font-size:clamp(.9rem,1.7vw,1.1rem);}
+  .flip-back{border:2px solid var(--line); background:#fff; border-radius:999px; cursor:pointer; font:inherit;
+    font-weight:800; font-size:.76rem; color:var(--muted); padding:5px 14px; transition:.16s; flex:0 0 auto;}
+  .flip-back:hover{transform:translateY(-2px); color:var(--ink);}
+
+  /* ===== Listening Test (left) ===== */
+  .qhead{text-align:left; margin-bottom:clamp(6px,1.2vh,10px);}
+  .qhead .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--global2); font-size:clamp(.8rem,1.4vw,.94rem);}
+  .qhead h3{font-family:'Caveat',cursive; font-size:clamp(1.7rem,3.4vw,2.3rem); line-height:1; color:var(--ink); margin:1px 0 3px; font-weight:700;}
+  .qhead p{color:#4a5568; font-size:clamp(.78rem,1.4vw,.9rem);}
+  .baby-mini{display:flex; align-items:center; gap:11px; margin-bottom:clamp(8px,1.4vh,12px);}
+  .baby-mini .pic{width:56px; height:56px; border-radius:50%; overflow:hidden; background:var(--cream); box-shadow:0 4px 12px rgba(0,0,0,.14); flex:0 0 auto; animation:babybob 3s ease-in-out infinite;}
+  .baby-mini .pic img{width:100%; height:100%; object-fit:cover; display:block;}
+  .baby-mini .say{font-family:'Caveat',cursive; font-size:clamp(1.05rem,2vw,1.35rem); color:var(--local2); line-height:1.12;}
+  .score-pill{margin-left:auto; display:inline-block; background:var(--cream); border:1px solid var(--line); border-radius:999px;
+    padding:5px 14px; font-size:.78rem; font-weight:700; color:var(--ink); flex:0 0 auto;}
+  .quiz-card{background:var(--global-soft); border:1px solid #cfe2f2; border-radius:16px; padding:clamp(10px,1.8vh,16px) clamp(13px,2.2vw,20px);}
+  .qitem + .qitem{border-top:1px dashed #cfe2f2; margin-top:clamp(9px,1.5vh,13px); padding-top:clamp(9px,1.5vh,13px);}
+  .qitem .qlabel{display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+  .qitem .qnum{font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:var(--global2); font-size:.86rem;}
+  .qitem .qmini{font-size:1.1rem;}
+  .qq{color:#3a4657; font-size:clamp(.8rem,1.45vw,.92rem); line-height:1.4;}
+  .qq b{color:var(--ink);}
+  .qopts{display:flex; gap:clamp(6px,1.1vw,10px); flex-wrap:wrap; margin-top:clamp(6px,1.2vh,10px);}
+  .qopt{border:2px solid #cfe2f2; background:#fff; border-radius:999px; padding:6px 15px; cursor:pointer; font:inherit;
+    font-weight:800; color:var(--global2); font-size:clamp(.76rem,1.25vw,.88rem); transition:.18s;}
+  .qopt:hover{transform:translateY(-2px); border-color:var(--global); box-shadow:0 6px 14px rgba(63,143,202,.16);}
+  .qopt:disabled{cursor:default;}
+  .qopt.win{border-color:var(--sage); background:#eaf6ef; color:#2e7d32;}
+  .qopt.lose{border-color:var(--coral); background:#fbe9ee; color:#c04a63;}
+  .qexpl{display:none; margin-top:8px; font-size:clamp(.74rem,1.3vw,.86rem); color:#4a5568; line-height:1.4;}
+  .qexpl.on{display:block;} .qexpl b{color:var(--ink);}
+
+  /* ===== The Encore (right) ===== */
+  .g-kick{text-align:center; font-size:clamp(.62rem,1.15vw,.76rem); letter-spacing:2.5px; text-transform:uppercase; color:var(--global2); font-weight:800;}
+  .g-sub{text-align:center; color:#5a6472; font-size:clamp(.8rem,1.45vw,.94rem); max-width:560px; margin:4px auto 0;}
+  .g-sub b.g{color:var(--global2);} .g-sub b.l{color:var(--local2);}
+  .sex-row{display:flex; justify-content:center; gap:10px; margin:clamp(7px,1.2vh,12px) 0 clamp(4px,.7vh,7px);}
+  .sex-btn{border:2px solid var(--line); background:#fff; border-radius:999px; padding:5px 20px; cursor:pointer; font:inherit;
+    font-weight:800; color:var(--muted); font-size:clamp(.8rem,1.3vw,.92rem); transition:.18s; display:flex; align-items:center; gap:7px;}
+  .sex-btn:hover{transform:translateY(-2px);}
+  .sex-btn.on.girl{border-color:var(--global); background:var(--global-soft); color:var(--global2);}
+  .sex-btn.on.boy{border-color:var(--local); background:var(--local-soft); color:var(--local2);}
+  .sex-hint{text-align:center; font-size:clamp(.72rem,1.3vw,.82rem); color:var(--muted); font-style:italic; min-height:1.2em;}
+  .sex-hint b.g{color:var(--global2); font-style:normal;} .sex-hint b.l{color:var(--local2); font-style:normal;}
+  .picks{display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,2vw,20px); margin-top:clamp(6px,1.1vh,11px);}
+  @media(max-width:520px){.picks{grid-template-columns:1fr; gap:12px;}}
+  .pcol .phead{text-align:center; font-weight:800; font-size:clamp(.76rem,1.3vw,.9rem); margin-bottom:clamp(4px,.8vh,7px); display:flex; align-items:center; justify-content:center; gap:6px;}
+  .plist{display:flex; flex-direction:column; gap:clamp(4px,.6vh,6px);}
+  .nbtn{position:relative; border:2px solid var(--line); background:#fff; border-radius:12px; padding:clamp(4px,.7vh,7px) 13px;
+    cursor:pointer; font:inherit; text-align:center; transition:.16s; box-shadow:0 3px 10px rgba(120,150,190,.07);}
+  .nbtn:hover{transform:translateY(-2px);}
+  .nbtn .nrow{display:flex; align-items:baseline; justify-content:center; gap:8px; flex-wrap:wrap;}
+  .nbtn .nn{font-weight:800; font-size:clamp(.88rem,1.45vw,1.02rem); line-height:1.1; color:var(--ink);}
+  .nbtn .nm-mean{font-family:'Fraunces',serif; font-style:italic; font-size:clamp(.6rem,1.05vw,.72rem); color:var(--local2); line-height:1.15;}
+  .nbtn.gsel .nm-mean{color:var(--global2);}
+  .nbtn .ns{display:block; font-size:clamp(.55rem,.95vw,.64rem); color:var(--muted); margin-top:1px; font-weight:600;}
+  .nbtn .dyk{position:absolute; top:5px; right:8px; font-size:.68rem; opacity:.8;}
+  .nbtn.gsel{border-color:var(--global); background:var(--global-soft); box-shadow:0 6px 16px rgba(63,143,202,.18);}
+  .nbtn.lsel{border-color:var(--local); background:var(--local-soft); box-shadow:0 6px 16px rgba(138,91,176,.18);}
+  .result{text-align:center; margin-top:clamp(6px,1.1vh,11px); min-height:2em;}
+  .result .rlab{font-size:.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .result .rname{font-family:'Caveat',cursive; font-size:clamp(1.7rem,3.4vw,2.4rem); line-height:1.02; color:var(--ink); margin-top:1px;}
+  .result .rname .fn{color:var(--global2);} .result .rname .mn{color:var(--local2);}
+  .result.boy .rname .fn{color:var(--local2);} .result.boy .rname .mn{color:var(--global2);}
+  .result .rtiny{font-size:clamp(.72rem,1.3vw,.82rem); color:#5a6472; font-style:italic; margin-top:2px;}
+  .result .rmean{font-size:clamp(.72rem,1.3vw,.8rem); color:#5a6472; margin-top:3px;}
+  .result .rmean b{color:var(--local2);} .result.boy .rmean b{color:var(--local2);}
+  .cert-btn{margin-top:clamp(6px,1vh,9px); border:none; cursor:pointer; font:inherit; font-weight:800;
+    font-size:clamp(.82rem,1.4vw,.96rem); color:#fff; padding:8px 22px; border-radius:999px;
+    background:linear-gradient(135deg,var(--global),var(--local)); box-shadow:0 7px 18px rgba(120,90,180,.28); transition:.18s;}
+  .cert-btn:hover{transform:translateY(-2px); box-shadow:0 11px 24px rgba(120,90,180,.34);}
+
+  /* certificate overlay */
+  .cert-modal{position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+    background:rgba(58,70,87,.55); backdrop-filter:blur(4px); padding:clamp(12px,3vh,30px);}
+  .cert-modal.on{display:flex;}
+  .cert-inner{display:flex; flex-direction:column; align-items:center; gap:clamp(8px,1.4vh,14px); max-width:min(94vw,900px); max-height:94vh;}
+  .cert-inner canvas{width:100%; height:auto; max-height:78vh; border-radius:12px; box-shadow:0 20px 50px rgba(40,40,70,.4); background:#fff;}
+  .cert-actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center;}
+  .cert-actions button{border:none; cursor:pointer; font:inherit; font-weight:800; font-size:.92rem; padding:9px 22px; border-radius:999px; transition:.18s;}
+  .cert-actions .dl{color:#fff; background:linear-gradient(135deg,var(--global),var(--local)); box-shadow:0 7px 18px rgba(120,90,180,.28);}
+  .cert-actions .dl:hover{transform:translateY(-2px);}
+  .cert-actions .close{color:var(--ink); background:#fff; border:2px solid var(--line);}
+
+  .foot{text-align:center; margin-top:clamp(14px,2.4vh,22px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
+  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
+  .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
 </style>
 </head>
 <body>
-<div class="bgnotes">
-  <span style="top:12%;left:5%;color:#f0a020;font-size:1.5rem;">♪</span>
-  <span style="top:22%;right:7%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
-  <span style="top:66%;left:4%;color:#4a9bd4;font-size:1.6rem;animation-delay:1.2s;">♩</span>
-  <span style="top:80%;right:6%;color:#e8788c;font-size:1.4rem;animation-delay:.5s;">♬</span>
-  <span style="top:46%;left:2%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
+
+<div class="notes">
+  <span style="top:12%;left:16%;color:#3f8fca;font-size:1.4rem;">♪</span>
+  <span style="top:20%;right:18%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
+  <span style="top:64%;left:12%;color:#f0a020;font-size:1.5rem;animation-delay:1.2s;">♩</span>
+  <span style="top:76%;right:14%;color:#e8788c;font-size:1.3rem;animation-delay:.5s;">♬</span>
+  <span style="top:42%;left:20%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
+  <span style="top:30%;right:24%;color:#f0b23e;font-size:1.2rem;animation-delay:2.3s;">♫</span>
 </div>
+
 <div class="now-badge" onclick="this.classList.toggle('paused')" title="ambient score">
   <span class="eqbars"><i></i><i></i><i></i><i></i></span>
-  <span class="nb-txt"><small>Now Playing</small>Liner Notes</span>
+  <span class="nb-txt"><small>Now Playing</small>The Finale</span>
 </div>
 
-<section class="sheet">
-  <div class="inner">
-    <div class="head">
-      <div class="chapter-tag">~ Liner Notes ~</div>
-      <h1 class="title">The Making of the Record</h1>
-      <p class="lead">Every album has a back cover. Here is ours, the data, the idea, the tools, and where the machines helped.</p>
+<!-- the two composers, images taken from The Encore -->
+<img class="composer aria" src="assets/aria_cut.png" alt="">
+<img class="composer cormac" src="assets/cormac_cut.png" alt="">
+
+<section class="stage-wrap">
+
+  <div class="page-hero">
+    <div class="chapter-tag">~ The Encore ~</div>
+    <h1><span style="font-size:.8em">🎼</span> The Finale</h1>
+    <p>Aria has her chart-topper. Cormac has his hometown treasure. Neither is wrong, so they stop competing and do what composers do with two good melodies: <b class="g">write one song together</b>. Flip the left card to prove your ear, then flip the right to finish the song.</p>
+    <div class="flip-hint">↔ tap a card to flip it over</div>
+  </div>
+
+  <div class="deck">
+
+    <!-- ══════════ LEFT: The Listening Test ══════════ -->
+    <div class="flip-card" id="cardLeft">
+      <div class="flip-inner">
+
+        <!-- front -->
+        <div class="face front left" onclick="flip('cardLeft',true)">
+          <div class="front-pic"><img src="assets/baby_singer.png" alt="The baby, waiting for a name"></div>
+          <h2>The Listening Test</h2>
+          <p>"Before they name me… can <b>you</b> read the charts?" Four quick ones about the songs behind the names.</p>
+          <button class="flip-cta" onclick="event.stopPropagation();flip('cardLeft',true)">🎧 Start the test →</button>
+        </div>
+
+        <!-- back -->
+        <div class="face back">
+          <div class="back-scroll">
+            <div class="back-head">
+              <span class="bt" style="color:var(--global2)">🎧 The Listening Test</span>
+              <button class="flip-back" onclick="flip('cardLeft',false)">↩ flip back</button>
+            </div>
+
+            <div class="baby-mini">
+              <div class="pic"><img src="assets/baby_singer.png" alt="The baby"></div>
+              <div class="say">"Can you read<br>the charts?"</div>
+              <div class="score-pill" id="scorePill">🎧 0 / 4 correct</div>
+            </div>
+
+            <div class="qhead">
+              <h3>One More Round</h3>
+              <p>No hints — just what your ear already knows.</p>
+            </div>
+
+            <div class="quiz-card">
+              <div class="qitem" id="q1">
+                <div class="qlabel"><span class="qmini">😈</span><span class="qnum">Q1</span></div>
+                <div class="qq">One name sat at <b>zero babies a year</b> for decades, then a hit show rebranded the devil as a charming lead and it broke through. Which name?</div>
+                <div class="qopts">
+                  <button class="qopt" onclick="answer(this,'q1',0)">Damien</button>
+                  <button class="qopt" onclick="answer(this,'q1',1)">Lucifer</button>
+                  <button class="qopt" onclick="answer(this,'q1',2)">Judas</button>
+                </div>
+                <div class="qexpl" id="q1expl"></div>
+              </div>
+
+              <div class="qitem" id="q2">
+                <div class="qlabel"><span class="qmini">🎬</span><span class="qnum">Q2</span></div>
+                <div class="qq">One of these did <b>not exist as a name at all</b> until a TV show invented it. Which one?</div>
+                <div class="qopts">
+                  <button class="qopt" onclick="answer(this,'q2',0)">Emma</button>
+                  <button class="qopt" onclick="answer(this,'q2',1)">Khaleesi</button>
+                  <button class="qopt" onclick="answer(this,'q2',2)">Oliver</button>
+                </div>
+                <div class="qexpl" id="q2expl"></div>
+              </div>
+
+              <div class="qitem" id="q3">
+                <div class="qlabel"><span class="qmini">🔊</span><span class="qnum">Q3</span></div>
+                <div class="qq">Parents nearly <b>stopped</b> using this name after a talking speaker launched with it in 2014. Which name got overwritten by a gadget?</div>
+                <div class="qopts">
+                  <button class="qopt" onclick="answer(this,'q3',0)">Alexa</button>
+                  <button class="qopt" onclick="answer(this,'q3',1)">Alina</button>
+                  <button class="qopt" onclick="answer(this,'q3',2)">Alessia</button>
+                </div>
+                <div class="qexpl" id="q3expl"></div>
+              </div>
+
+              <div class="qitem" id="q4">
+                <div class="qlabel"><span class="qmini">🌍</span><span class="qnum">Q4</span></div>
+                <div class="qq">In the 1930s a baby name took about <b>65 years</b> to spread across the English-speaking world. Today, how long?</div>
+                <div class="qopts">
+                  <button class="qopt" onclick="answer(this,'q4',0)">Still ~65 years</button>
+                  <button class="qopt" onclick="answer(this,'q4',1)">About 40 years</button>
+                  <button class="qopt" onclick="answer(this,'q4',2)">Under 10 years</button>
+                </div>
+                <div class="qexpl" id="q4expl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <div class="notes-grid">
-      <!-- 1 · Data source & scope -->
-      <div class="lncard c1">
-        <div class="ln-h"><span class="ic">💿</span><span class="t">The Recordings — our data</span></div>
-        <div class="ln-b">
-          <div class="stat-row">
-            <div class="stat"><div class="v">8</div><div class="l">countries</div></div>
-            <div class="stat"><div class="v">27</div><div class="l">years</div></div>
-            <div class="stat"><div class="v">17.5k</div><div class="l">names</div></div>
+    <!-- ══════════ RIGHT: The Duet ══════════ -->
+    <div class="flip-card" id="cardRight">
+      <div class="flip-inner">
+
+        <!-- front -->
+        <div class="face front right" onclick="flip('cardRight',true)">
+          <div class="emoji">✍️</div>
+          <h2>The Duet</h2>
+          <p>Two voices, one name. Aria's chart-topper meets Cormac's hometown treasure — pick one from each side and let them compose it together.</p>
+          <button class="flip-cta" onclick="event.stopPropagation();flip('cardRight',true)">🎶 Name the baby →</button>
+        </div>
+
+        <!-- back -->
+        <div class="face back">
+          <div class="back-scroll">
+            <div class="back-head">
+              <span class="bt" style="color:var(--local2)">🎼 The Duet</span>
+              <button class="flip-back" onclick="flip('cardRight',false)">↩ flip back</button>
+            </div>
+
+            <div class="g-kick">🎼 Write the song — name the baby</div>
+            <div class="g-sub" id="gsub">First, is it a boy or a girl? Then pick one name from <b class="g">Aria's side</b> and one from <b class="l">Cormac's side</b>. They're both listening.</div>
+
+            <div class="sex-row">
+              <button class="sex-btn girl" id="btnGirl" onclick="setSex('F')">👧 Girl</button>
+              <button class="sex-btn boy"  id="btnBoy"  onclick="setSex('M')">👦 Boy</button>
+            </div>
+            <div class="sex-hint" id="sexHint">Pick one to start, and the two sides compose a first name and a middle name together.</div>
+
+            <div class="picks">
+              <div class="pcol first" id="colFirst">
+                <div class="phead" id="headFirst"></div>
+                <div class="plist" id="listFirst"></div>
+              </div>
+              <div class="pcol second" id="colSecond">
+                <div class="phead" id="headSecond"></div>
+                <div class="plist" id="listSecond"></div>
+              </div>
+            </div>
+
+            <div class="result" id="result"></div>
           </div>
-          <p>Official national birth-registration name counts across the <b>Anglosphere</b>: USA, England &amp; Wales, Scotland, Northern Ireland, Ireland, Canada, Australia and New Zealand, for every year from <b>1997 to 2023</b>.</p>
-          <p>We chose 1997&ndash;2023 because it is the window where all eight countries publish comparable yearly data. Names below each country's privacy threshold aren't published, so ultra-rare spellings may be undercounted.</p>
         </div>
-      </div>
 
-      <!-- 2 · Why this story -->
-      <div class="lncard c2">
-        <div class="ln-h"><span class="ic">🎼</span><span class="t">Why We Wrote It — the idea</span></div>
-        <div class="ln-b">
-          <p>Everyone has a story about their name — where it came from, whether it was common or rare, how it felt to grow up with it. That everyday intimacy is exactly what pulled us toward this.</p>
-          <p>Baby names sit at a rare crossing point: deeply personal, yet recorded as clean public data across eight countries and nearly three decades. We used them to ask a simple question with a surprisingly rich answer — when does a name belong to the whole world, and when does it belong to just one place?</p>
-
-          <!-- the two of us -->
-          <div class="authors">
-            <figure class="author">
-              <img src="assets/yuktad.jpg" alt="Yukta">
-              <figcaption>Yukta</figcaption>
-            </figure>
-            <figure class="author">
-              <img src="assets/Vaishupa.jpg" alt="Vaishnavee">
-              <figcaption>Vaishnavee</figcaption>
-            </figure>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3 · Tools & tech -->
-      <div class="lncard c3">
-        <div class="ln-h"><span class="ic">🎛️</span><span class="t">The Studio — how it was built</span></div>
-        <div class="ln-b">
-          <p>Data wrangled and the <b>countryness</b> metric computed in <b>Python (pandas)</b>. The story is a set of standalone <b>HTML / CSS / JavaScript</b> sheets, stitched into one scroll and served through <b>Streamlit</b> (Community Cloud).</p>
-          <div class="ln-chips">
-            <span class="chip">Python · pandas</span>
-            <span class="chip">HTML / CSS / JS</span>
-            <span class="chip">Streamlit</span>
-            <span class="chip">SVG charts</span>
-            <span class="chip">Web Speech · audio</span>
-          </div>
-          <p style="margin-top:7px;">Every chart is hand-built SVG or lightweight canvas, no chart library, so each visual matches the music theme exactly.</p>
-        </div>
-      </div>
-
-      <!-- 4 · AI usage -->
-      <div class="lncard c4">
-        <div class="ln-h"><span class="ic">🤖</span><span class="t">The Session Musicians — AI usage</span></div>
-        <div class="ln-b">
-          <p>Generative AI was a <b>collaborator, not the author</b>. It helped with:</p>
-          <p>🎨 The two composer illustrations (Aria &amp; Cormac) and the singing-baby cover art.<br>
-          💬 Copy-editing and phrasing the narration.<br>
-          🛠️ Drafting and debugging HTML/CSS/JS for the interactive sheets.<br>
-          🔊 Pronunciation clips for the name quizzes.</p>
-          <p><b>All data, metrics and findings are our own</b>, computed from the source records and verified by hand. No numbers were generated by AI.</p>
-        </div>
       </div>
     </div>
 
-    <div class="foot">
-      <span class="pageno">Liner Notes · Closing</span>
-      <a href="encore.html">↩ back to the Encore</a>
+  </div>
+
+  <div class="foot">
+    <span class="pageno">The Finale · 5–6 / 7</span>
+    <a href="cormac.html">↩ back to Side B</a>
+    <a href="aria.html">Read the liner notes →</a>
+  </div>
+
+</section>
+
+<!-- certificate overlay -->
+<div class="cert-modal" id="certModal" onclick="if(event.target===this)closeCert()">
+  <div class="cert-inner">
+    <canvas id="certCanvas" width="1448" height="1086"></canvas>
+    <div class="cert-actions">
+      <button class="dl" onclick="downloadCert()">⬇ Download certificate</button>
+      <button class="close" onclick="closeCert()">Close</button>
     </div>
   </div>
-</section>
+</div>
+
+<script>
+  /* ── shared sound helper (used by both sides) ── */
+  var _cache={};
+  function ping(name){
+    try{ var a=_cache[name]||(_cache[name]=new Audio('assets/'+name+'.wav')); a.currentTime=0; a.play().catch(function(){}); }catch(e){}
+  }
+
+  /* ── flip control ── */
+  function flip(id, on){
+    document.getElementById(id).classList.toggle('flipped', !!on);
+  }
+
+  /* ══════════ Listening Test logic ══════════ */
+  var QUIZ = {
+    q1:{correct:1, expl:'🎧 <b>Lucifer.</b> For decades it sat at essentially zero, too loaded a name. Then the TV show <em>Lucifer</em> (2016) recast the devil as a charming lead and it broke onto the charts. A hit show can rewrite a name overnight.'},
+    q2:{correct:1, expl:'📺 <b>Khaleesi.</b> Emma and Oliver are centuries-old classics, but Khaleesi did not exist as a name until <em>Game of Thrones</em> minted the title. A pure reference.'},
+    q3:{correct:0, expl:'🔊 <b>Alexa.</b> It was climbing the charts until 2014, when Amazon\'s Echo took the name, and parents dropped it almost overnight (down about 92%). A global name a gadget can overwrite.'},
+    q4:{correct:2, expl:'🌍 <b>Under 10 years.</b> Shared media, from TV to streaming, collapsed the time a name needs to cross the whole Anglosphere, from roughly 65 years down to under 10.'}
+  };
+  var score=0, answered=0;
+  function answer(btn, id, idx){
+    var card=document.getElementById(id);
+    if(card.dataset.done) return;
+    card.dataset.done='1'; answered++;
+    var correct=QUIZ[id].correct;
+    card.querySelectorAll('.qopt').forEach(function(o,i){
+      o.disabled=true;
+      if(i===correct) o.classList.add('win');
+      else if(i===idx) o.classList.add('lose');
+    });
+    var expl=document.getElementById(id+'expl');
+    expl.innerHTML=QUIZ[id].expl; expl.classList.add('on');
+    var right = idx===correct;
+    if(right) score++;
+    ping(right?'sfx_correct':'sfx_wrong');
+    document.getElementById('scorePill').textContent='🎧 '+score+' / 4 correct';
+  }
+
+  /* ══════════ The Encore logic ══════════ */
+  var GLOBAL = {
+    F:[
+      {nm:'Olivia',   sub:"world's #1, all 8 charts",  mean:'olive tree, peace'},
+      {nm:'Isabella', sub:'a chart-topping melody',    mean:'devoted, pledged to God'},
+      {nm:'Mia',      sub:'short, soft, everywhere',   mean:'mine, beloved'},
+      {nm:'Laila',    sub:'soft, sung worldwide',      mean:'night, dark beauty'},
+      {nm:'Emma',     sub:'nearly vanished, then #1',  mean:'whole, universal', dyk:true}
+    ],
+    M:[
+      {nm:'Noah',    sub:'top of every chart',        mean:'rest, comfort'},
+      {nm:'Liam',    sub:'Irish root, sings worldwide',mean:'strong protector'},
+      {nm:'Oliver',  sub:'old, now everywhere',       mean:'olive tree', dyk:true},
+      {nm:'Lucifer', sub:'zero, then a hit show',     mean:'light-bringer', dyk:true}
+    ]
+  };
+  var LOCAL = {
+    F:[
+      {nm:'Fiadh',  sub:'Ireland · a wild one',      mean:'wild, a deer'},
+      {nm:'Nuala',  sub:'Ireland · quietly regal',   mean:'fair shoulder'},
+      {nm:'Orla',   sub:'Ireland · a little crown',  mean:'golden princess'},
+      {nm:'Maeve',  sub:'Ireland · a warrior queen', mean:'she who enchants'},
+      {nm:'Ciara',  sub:'Ireland · soft and dark',   mean:'dark-haired'}
+    ],
+    M:[
+      {nm:'Cillian', sub:'Ireland · bright-headed',  mean:'little church, bright'},
+      {nm:'Ronan',   sub:'Ireland · from the sea',   mean:'little seal'},
+      {nm:'Finn',    sub:'Ireland · fair and bright',mean:'fair, bright'},
+      {nm:'Cian',    sub:'Ireland · built to last',  mean:'ancient, enduring'},
+      {nm:'Conor',   sub:'Ireland · a steady heart', mean:'lover of hounds'}
+    ]
+  };
+  function meaningOf(nm){
+    for(var s in GLOBAL){ var a=GLOBAL[s].concat(LOCAL[s]); for(var i=0;i<a.length;i++){ if(a[i].nm===nm) return a[i].mean; } }
+    return '';
+  }
+
+  var sex=null, firstPick=null, secondPick=null;
+
+  function nameCard(n, kind){
+    return '<button class="nbtn" data-kind="'+kind+'" data-nm="'+n.nm+'" onclick="pick(this)">'
+      + (n.dyk ? '<span class="dyk" title="did you know?">💡</span>' : '')
+      + '<span class="nrow"><span class="nn">'+n.nm+'</span><span class="nm-mean">"'+n.mean+'"</span></span>'
+      + '<span class="ns">'+(n.dyk?'did you know · ':'♪ ')+n.sub+'</span></button>';
+  }
+  function setSex(s){
+    sex=s; firstPick=null; secondPick=null;
+    document.getElementById('btnGirl').classList.toggle('on', s==='F');
+    document.getElementById('btnBoy').classList.toggle('on', s==='M');
+    var firstPool  = s==='F' ? GLOBAL[s] : LOCAL[s];
+    var secondPool = s==='F' ? LOCAL[s]  : GLOBAL[s];
+    var firstIsGlobal = s==='F';
+    document.getElementById('headFirst').innerHTML  = firstIsGlobal
+      ? '🎤 <span style="color:var(--global2)">First name · Aria\'s side</span>'
+      : '💿 <span style="color:var(--local2)">First name · Cormac\'s side</span>';
+    document.getElementById('headSecond').innerHTML = firstIsGlobal
+      ? '💿 <span style="color:var(--local2)">Middle name · Cormac\'s side</span>'
+      : '🎤 <span style="color:var(--global2)">Middle name · Aria\'s side</span>';
+    document.getElementById('listFirst').innerHTML  = firstPool.map(function(n){return nameCard(n, firstIsGlobal?'g':'l');}).join('');
+    document.getElementById('listSecond').innerHTML = secondPool.map(function(n){return nameCard(n, firstIsGlobal?'l':'g');}).join('');
+    document.getElementById('sexHint').innerHTML = s==='F'
+      ? 'A first name from <b class="g">Aria\'s side</b> the world can already sing, and a middle name from <b class="l">Cormac\'s side</b> that carries home.'
+      : 'A first name from <b class="l">Cormac\'s side</b> that carries home, and a middle name from <b class="g">Aria\'s side</b> the world can sing.';
+    document.getElementById('result').className='result'+(s==='M'?' boy':'');
+    document.getElementById('result').innerHTML='';
+  }
+  function pick(btn){
+    var col=btn.closest('.pcol');
+    col.querySelectorAll('.nbtn').forEach(function(b){ b.classList.remove('gsel','lsel'); });
+    var kind=btn.dataset.kind;
+    btn.classList.add(kind==='g'?'gsel':'lsel');
+    if(col.id==='colFirst') firstPick=btn.dataset.nm; else secondPick=btn.dataset.nm;
+    ping(kind==='g'?'sfx_pick_g':'sfx_pick_l');
+    render();
+  }
+  function render(){
+    var r=document.getElementById('result');
+    if(!firstPick && !secondPick){ r.innerHTML=''; return; }
+    var fn=firstPick||'…', mn=secondPick||'…';
+    var complete = firstPick && secondPick;
+    var meanLine='';
+    if(complete){
+      var m1=meaningOf(fn), m2=meaningOf(mn);
+      meanLine='<div class="rmean"><b>'+fn+'</b> "'+m1+'" &nbsp;·&nbsp; <b>'+mn+'</b> "'+m2+'"</div>';
+    }
+    r.innerHTML='<div class="rlab">the baby\'s song</div>'
+      + '<div class="rname"><span class="fn">'+fn+'</span> <span class="mn">'+mn+'</span></div>'
+      + (complete ? '<div class="rtiny">one from each side, the whole duet in a single name.</div>'
+          + meanLine
+          + '<button class="cert-btn" onclick="openCert()">🎓 Get the certificate</button>' : '');
+    if(complete && !r.dataset.rang){ r.dataset.rang='1'; ping('sfx_resolve'); }
+    if(!complete) r.dataset.rang='';
+  }
+
+  /* ── Certificate ── */
+  var _certBg=null, _fontsReady=false;
+  (function preload(){
+    var img=new Image();
+    img.onload=function(){ _certBg=img; };
+    img.src='assets/certificate.png';
+    if(document.fonts && document.fonts.load){
+      Promise.all([document.fonts.load('700 120px Caveat'), document.fonts.load('italic 30px Fraunces')])
+        .then(function(){_fontsReady=true;}).catch(function(){_fontsReady=true;});
+    } else { _fontsReady=true; }
+  })();
+
+  function drawCert(){
+    var cv=document.getElementById('certCanvas'), ctx=cv.getContext('2d');
+    var W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    if(_certBg){ ctx.drawImage(_certBg,0,0,W,H); }
+    else { ctx.fillStyle='#fdf3ee'; ctx.fillRect(0,0,W,H); }
+    ctx.textAlign='center';
+    var cx=723;
+    var full=(firstPick||'')+' '+(secondPick||'');
+    ctx.fillStyle='#6f4a9c';
+    ctx.font='700 118px Caveat, cursive';
+    ctx.fillText(full, cx, 398);
+    var m1=meaningOf(firstPick), m2=meaningOf(secondPick);
+    ctx.fillStyle='#7a6a8c';
+    ctx.font='italic 27px Fraunces, serif';
+    ctx.fillText(firstPick+' “'+m1+'”   ·   '+secondPick+' “'+m2+'”', 690, 655);
+  }
+
+  function openCert(){
+    var m=document.getElementById('certModal');
+    m.classList.add('on');
+    var go=function(){ drawCert(); };
+    if(_certBg && _fontsReady){ go(); }
+    else {
+      var tries=0, iv=setInterval(function(){
+        tries++;
+        if((_certBg && _fontsReady) || tries>20){ clearInterval(iv); go(); setTimeout(go,250); }
+      },80);
+    }
+  }
+  function closeCert(){ document.getElementById('certModal').classList.remove('on'); }
+  function downloadCert(){
+    drawCert();
+    var cv=document.getElementById('certCanvas');
+    var fn=((firstPick||'name')+'-'+(secondPick||'')).replace(/[^A-Za-z]/g,'')+'-certificate.png';
+    try{
+      var a=document.createElement('a');
+      a.download=fn; a.href=cv.toDataURL('image/png'); a.click();
+    }catch(e){ window.open(cv.toDataURL('image/png')); }
+  }
+</script>
 </body>
 </html>
