@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Encore — Name the Baby</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3a4657; --muted:#7a8794; --line:#e8ddcb;
+    --panel:#fdf8ee; --cream:#fbf3d9;
+    --global:#3f8fca; --global2:#2e79ab; --global-soft:#e4f0fa;
+    --local:#8a5bb0; --local2:#6f4a9c; --local-soft:#f1e9fa;
+    --orange:#f0a020; --coral:#e8788c; --gold:#f0b23e; --sage:#3fa787;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Quicksand',sans-serif; color:var(--ink); line-height:1.55;
+    background:
+      radial-gradient(1000px 640px at 8% -5%, #e4f0fa 0%, transparent 55%),
+      radial-gradient(1000px 640px at 96% 4%, #f1e9fa 0%, transparent 55%),
+      linear-gradient(180deg, #eef4fb 0%, #f8f1e3 100%);
+    background-attachment:fixed;}
+
+  /* the two composers flank the page, as on Side A / Side B.
+     Each figure is centred in the gutter between the screen edge and the
+     900px content box: gutter = (50vw - box-half); figure sits in its middle.
+     This keeps a constant frame gap and never overlaps the box on wide screens. */
+  .composer{position:fixed; bottom:0; height:min(78vh,760px); width:auto; z-index:0; pointer-events:none; opacity:.95;}
+  /* box half-width ~470px; aria displayed ~370px, cormac ~412px wide at full height */
+  .composer.aria{left:max(-40px, calc((50vw - 470px - 370px)/2)); filter:drop-shadow(0 10px 20px rgba(120,150,190,.22));}
+  .composer.cormac{right:max(-40px, calc((50vw - 470px - 412px)/2)); filter:drop-shadow(0 10px 20px rgba(150,120,190,.22));}
+  @media(max-width:1240px){.composer{opacity:.85; height:min(68vh,640px);} .composer.aria{left:-34px;} .composer.cormac{right:-34px;}}
+  @media(max-width:980px){.composer{opacity:.1;}}
+
+  /* floating background notes + now-playing badge (shared) */
+  @keyframes fbob{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-16px) rotate(6deg);}}
+  .notes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .notes span{position:absolute; opacity:.34; animation:fbob 6s infinite ease-in-out;}
+  .now-badge{position:fixed; top:clamp(10px,1.6vh,16px); right:clamp(12px,2vw,20px); z-index:30; display:flex; align-items:center; gap:9px;
+    background:rgba(253,248,238,.92); border:1px solid var(--line); border-radius:999px; padding:6px 15px 6px 12px; cursor:pointer;
+    box-shadow:0 5px 16px rgba(120,150,190,.16); backdrop-filter:blur(4px); user-select:none;}
+  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px; flex:0 0 auto;}
+  .now-badge .eqbars i{width:3px; background:var(--global); border-radius:1px; animation:nbeq .9s ease-in-out infinite;}
+  .now-badge .eqbars i:nth-child(2){animation-delay:.2s; background:var(--local);}
+  .now-badge .eqbars i:nth-child(3){animation-delay:.4s; background:var(--orange);}
+  .now-badge .eqbars i:nth-child(4){animation-delay:.15s; background:var(--coral);}
+  .now-badge.paused .eqbars i{animation-play-state:paused;}
+  .now-badge .nb-txt{font-size:.72rem; font-weight:700; color:var(--ink); line-height:1;}
+  .now-badge .nb-txt small{display:block; font-weight:600; color:var(--muted); font-size:.6rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;}
+  @keyframes nbeq{0%,100%{height:3px;}50%{height:14px;}}
+  @media(max-width:620px){.now-badge{display:none;}}
+
+  .stage-wrap{position:relative; z-index:1; min-height:100vh; height:100vh; max-height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:clamp(8px,1.6vh,20px) clamp(16px,3vw,40px);}
+  /* never clip: if the picked state is taller than the viewport, let it scroll and top-align */
+  @media(max-height:840px){.stage-wrap{justify-content:flex-start;}}
+  .col{width:100%; max-width:900px; margin:auto 0; display:flex; flex-direction:column; gap:clamp(5px,.8vh,9px);}
+
+  /* header — plain centred text */
+  .hero{text-align:center;}
+  .hero .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--local2); font-size:clamp(.82rem,1.5vw,1rem);}
+  .hero h1{font-family:'Caveat',cursive; font-size:clamp(2rem,4.6vw,3.1rem); line-height:.95; color:var(--local2);
+    display:flex; align-items:center; justify-content:center; gap:.3em; margin:1px 0 4px;}
+  .hero h1 .mnote{font-size:.8em;}
+  .hero p{color:#4a5568; font-size:clamp(.82rem,1.5vw,.96rem); line-height:1.4; max-width:680px; margin:0 auto;}
+  .hero p b.g{color:var(--global2);} .hero p b.l{color:var(--local2);}
+
+  /* the naming game box */
+  .game{background:linear-gradient(140deg,var(--global-soft),#eef4fb 55%,var(--local-soft));
+    border:1px solid #d7e6f4; border-radius:20px; box-shadow:0 12px 34px rgba(120,150,190,.14);
+    padding:clamp(9px,1.6vh,16px) clamp(16px,3vw,34px);}
+  .g-kick{text-align:center; font-size:clamp(.64rem,1.2vw,.78rem); letter-spacing:2.5px; text-transform:uppercase; color:var(--global2); font-weight:800;}
+  .g-sub{text-align:center; color:#5a6472; font-size:clamp(.82rem,1.5vw,.98rem); max-width:640px; margin:4px auto 0;}
+  .g-sub b.g{color:var(--global2);} .g-sub b.l{color:var(--local2);}
+
+  .sex-row{display:flex; justify-content:center; gap:10px; margin:clamp(6px,1.1vh,11px) 0 clamp(4px,.7vh,7px);}
+  .sex-btn{border:2px solid var(--line); background:#fff; border-radius:999px; padding:5px 20px; cursor:pointer; font:inherit;
+    font-weight:800; color:var(--muted); font-size:clamp(.8rem,1.3vw,.92rem); transition:.18s; display:flex; align-items:center; gap:7px;}
+  .sex-btn:hover{transform:translateY(-2px);}
+  .sex-btn.on.girl{border-color:var(--global); background:var(--global-soft); color:var(--global2);}
+  .sex-btn.on.boy{border-color:var(--local); background:var(--local-soft); color:var(--local2);}
+  .sex-hint{text-align:center; font-size:clamp(.72rem,1.3vw,.82rem); color:var(--muted); font-style:italic; min-height:1.2em;}
+  .sex-hint b.g{color:var(--global2); font-style:normal;} .sex-hint b.l{color:var(--local2); font-style:normal;}
+
+  .picks{display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,2.4vw,32px); margin-top:clamp(6px,1.1vh,11px);}
+  @media(max-width:640px){.picks{grid-template-columns:1fr; gap:14px;}}
+  .pcol .phead{text-align:center; font-weight:800; font-size:clamp(.78rem,1.35vw,.92rem); margin-bottom:clamp(4px,.8vh,7px); display:flex; align-items:center; justify-content:center; gap:7px;}
+  .plist{display:flex; flex-direction:column; gap:clamp(4px,.6vh,6px);}
+  .nbtn{position:relative; border:2px solid var(--line); background:#fff; border-radius:12px; padding:clamp(4px,.7vh,7px) 15px;
+    cursor:pointer; font:inherit; text-align:center; transition:.16s; box-shadow:0 3px 10px rgba(120,150,190,.07);}
+  .nbtn:hover{transform:translateY(-2px);}
+  .nbtn .nrow{display:flex; align-items:baseline; justify-content:center; gap:8px; flex-wrap:wrap;}
+  .nbtn .nn{font-weight:800; font-size:clamp(.9rem,1.5vw,1.04rem); line-height:1.1; color:var(--ink);}
+  .nbtn .nm-mean{font-family:'Fraunces',serif; font-style:italic; font-size:clamp(.62rem,1.1vw,.74rem); color:var(--local2); line-height:1.15;}
+  .nbtn.gsel .nm-mean{color:var(--global2);}
+  .nbtn .ns{display:block; font-size:clamp(.56rem,1vw,.66rem); color:var(--muted); margin-top:1px; font-weight:600;}
+  .nbtn .dyk{position:absolute; top:5px; right:8px; font-size:.68rem; opacity:.8;}
+  .nbtn.gsel{border-color:var(--global); background:var(--global-soft); box-shadow:0 6px 16px rgba(63,143,202,.18);}
+  .nbtn.lsel{border-color:var(--local); background:var(--local-soft); box-shadow:0 6px 16px rgba(138,91,176,.18);}
+
+  .result{text-align:center; margin-top:clamp(6px,1.1vh,11px); min-height:2em;}
+  .result .rlab{font-size:.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .result .rname{font-family:'Caveat',cursive; font-size:clamp(1.7rem,3.4vw,2.4rem); line-height:1.02; color:var(--ink); margin-top:1px;}
+  .result .rname .fn{color:var(--global2);} .result .rname .mn{color:var(--local2);}
+  .result.boy .rname .fn{color:var(--local2);} .result.boy .rname .mn{color:var(--global2);}
+  .result .rtiny{font-size:clamp(.72rem,1.3vw,.82rem); color:#5a6472; font-style:italic; margin-top:2px;}
+  .result .rmean{font-size:clamp(.72rem,1.3vw,.8rem); color:#5a6472; margin-top:3px;}
+  .result .rmean b{color:var(--local2);} .result.boy .rmean b{color:var(--local2);}
+  .cert-btn{margin-top:clamp(6px,1vh,9px); border:none; cursor:pointer; font:inherit; font-weight:800;
+    font-size:clamp(.82rem,1.4vw,.96rem); color:#fff; padding:8px 22px; border-radius:999px;
+    background:linear-gradient(135deg,var(--global),var(--local)); box-shadow:0 7px 18px rgba(120,90,180,.28); transition:.18s;}
+  .cert-btn:hover{transform:translateY(-2px); box-shadow:0 11px 24px rgba(120,90,180,.34);}
+
+  /* certificate overlay */
+  .cert-modal{position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+    background:rgba(58,70,87,.55); backdrop-filter:blur(4px); padding:clamp(12px,3vh,30px);}
+  .cert-modal.on{display:flex;}
+  .cert-inner{display:flex; flex-direction:column; align-items:center; gap:clamp(8px,1.4vh,14px); max-width:min(94vw,900px); max-height:94vh;}
+  .cert-inner canvas{width:100%; height:auto; max-height:78vh; border-radius:12px; box-shadow:0 20px 50px rgba(40,40,70,.4); background:#fff;}
+  .cert-actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center;}
+  .cert-actions button{border:none; cursor:pointer; font:inherit; font-weight:800; font-size:.92rem; padding:9px 22px; border-radius:999px; transition:.18s;}
+  .cert-actions .dl{color:#fff; background:linear-gradient(135deg,var(--global),var(--local)); box-shadow:0 7px 18px rgba(120,90,180,.28);}
+  .cert-actions .dl:hover{transform:translateY(-2px);}
+  .cert-actions .close{color:var(--ink); background:#fff; border:2px solid var(--line);}
+
+  .foot{text-align:center; margin-top:clamp(4px,.9vh,9px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
+  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
+  .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
+
+  @media(max-height:820px), (max-width:820px){
+    .stage-wrap{height:auto; max-height:none; overflow:visible; min-height:100vh;}
+  }
+</style>
+</head>
+<body>
+
+<div class="notes">
+  <span style="top:12%;left:16%;color:#3f8fca;font-size:1.4rem;">♪</span>
+  <span style="top:20%;right:18%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
+  <span style="top:64%;left:12%;color:#f0a020;font-size:1.5rem;animation-delay:1.2s;">♩</span>
+  <span style="top:76%;right:14%;color:#e8788c;font-size:1.3rem;animation-delay:.5s;">♬</span>
+  <span style="top:42%;left:20%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
+  <span style="top:30%;right:24%;color:#f0b23e;font-size:1.2rem;animation-delay:2.3s;">♫</span>
+</div>
+
+<div class="now-badge" onclick="this.classList.toggle('paused')" title="ambient score">
+  <span class="eqbars"><i></i><i></i><i></i><i></i></span>
+  <span class="nb-txt"><small>Now Playing</small>The Encore</span>
+</div>
+
+<!-- the two composers, one on each side; the naming happens between them -->
+<img class="composer aria" src="assets/aria_cut.png" alt="">
+<img class="composer cormac" src="assets/cormac_cut.png" alt="">
+
+<section class="stage-wrap">
+  <div class="col">
+
+    <div class="hero">
+      <div class="chapter-tag">~ The Encore ~</div>
+      <h1><span class="mnote">🎶</span> The Name, At Last</h1>
+      <p>Aria has her chart-topper. Cormac has his hometown treasure. Neither is wrong, so they stop competing and do what composers do with two good melodies: <b class="g">write one song together</b>. Your turn to finish it.</p>
+    </div>
+
+    <div class="game">
+      <div class="g-kick">🎼 Write the song — name the baby</div>
+      <div class="g-sub" id="gsub">First, is it a boy or a girl? Then pick one name from <b class="g">Aria's side</b> and one from <b class="l">Cormac's side</b>. They're both listening.</div>
+
+      <div class="sex-row">
+        <button class="sex-btn girl" id="btnGirl" onclick="setSex('F')">👧 Girl</button>
+        <button class="sex-btn boy"  id="btnBoy"  onclick="setSex('M')">👦 Boy</button>
+      </div>
+      <div class="sex-hint" id="sexHint">Pick one to start, and the two sides compose a first name and a middle name together.</div>
+
+      <div class="picks">
+        <div class="pcol first" id="colFirst">
+          <div class="phead" id="headFirst"></div>
+          <div class="plist" id="listFirst"></div>
+        </div>
+        <div class="pcol second" id="colSecond">
+          <div class="phead" id="headSecond"></div>
+          <div class="plist" id="listSecond"></div>
+        </div>
+      </div>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="foot">
+      <span class="pageno">The Encore · 7 / 8</span>
+      <a href="quiz.html">↩ back to the Listening Test</a>
+      <a href="methods.html">Read the liner notes →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- certificate overlay -->
+<div class="cert-modal" id="certModal" onclick="if(event.target===this)closeCert()">
+  <div class="cert-inner">
+    <canvas id="certCanvas" width="1448" height="1086"></canvas>
+    <div class="cert-actions">
+      <button class="dl" onclick="downloadCert()">⬇ Download certificate</button>
+      <button class="close" onclick="closeCert()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Name pools. GLOBAL = Aria's chart-toppers; LOCAL = Cormac's Irish home names.
+  // `mean` is the name's meaning, shown on the card and printed on the certificate.
+  var GLOBAL = {
+    F:[
+      {nm:'Olivia',   sub:"world's #1, all 8 charts",  mean:'olive tree, peace'},
+      {nm:'Isabella', sub:'a chart-topping melody',    mean:'devoted, pledged to God'},
+      {nm:'Mia',      sub:'short, soft, everywhere',   mean:'mine, beloved'},
+      {nm:'Aria',     sub:"our narrator's own name",   mean:'a solo melody'},
+      {nm:'Emma',     sub:'nearly vanished, then #1',  mean:'whole, universal', dyk:true}
+    ],
+    M:[
+      {nm:'Noah',    sub:'top of every chart',        mean:'rest, comfort'},
+      {nm:'Liam',    sub:'Irish root, sings worldwide',mean:'strong protector'},
+      {nm:'Oliver',  sub:'old, now everywhere',       mean:'olive tree', dyk:true},
+      {nm:'Lucifer', sub:'zero, then a hit show',     mean:'light-bringer', dyk:true}
+    ]
+  };
+  // Cormac's side: readable IRISH names (verified in lookup.json), each with its meaning.
+  var LOCAL = {
+    F:[
+      {nm:'Fiadh',  sub:'Ireland · a wild one',      mean:'wild, a deer'},
+      {nm:'Nuala',  sub:'Ireland · quietly regal',   mean:'fair shoulder'},
+      {nm:'Orla',   sub:'Ireland · a little crown',  mean:'golden princess'},
+      {nm:'Maeve',  sub:'Ireland · a warrior queen', mean:'she who enchants'},
+      {nm:'Ciara',  sub:'Ireland · soft and dark',   mean:'dark-haired'}
+    ],
+    M:[
+      {nm:'Cillian', sub:'Ireland · bright-headed',  mean:'little church, bright'},
+      {nm:'Ronan',   sub:'Ireland · from the sea',   mean:'little seal'},
+      {nm:'Finn',    sub:'Ireland · fair and bright',mean:'fair, bright'},
+      {nm:'Cian',    sub:'Ireland · built to last',  mean:'ancient, enduring'},
+      {nm:'Conor',   sub:'Ireland · a steady heart', mean:'lover of hounds'}
+    ]
+  };
+  // quick lookup of a name's meaning for the certificate
+  function meaningOf(nm){
+    for(var s in GLOBAL){ var a=GLOBAL[s].concat(LOCAL[s]); for(var i=0;i<a.length;i++){ if(a[i].nm===nm) return a[i].mean; } }
+    return '';
+  }
+
+  var sex=null, firstPick=null, secondPick=null;
+
+  function nameCard(n, kind){
+    return '<button class="nbtn" data-kind="'+kind+'" data-nm="'+n.nm+'" onclick="pick(this)">'
+      + (n.dyk ? '<span class="dyk" title="did you know?">💡</span>' : '')
+      + '<span class="nrow"><span class="nn">'+n.nm+'</span><span class="nm-mean">"'+n.mean+'"</span></span>'
+      + '<span class="ns">'+(n.dyk?'did you know · ':'♪ ')+n.sub+'</span></button>';
+  }
+  function setSex(s){
+    sex=s; firstPick=null; secondPick=null;
+    document.getElementById('btnGirl').classList.toggle('on', s==='F');
+    document.getElementById('btnBoy').classList.toggle('on', s==='M');
+    var firstPool  = s==='F' ? GLOBAL[s] : LOCAL[s];
+    var secondPool = s==='F' ? LOCAL[s]  : GLOBAL[s];
+    var firstIsGlobal = s==='F';
+    document.getElementById('headFirst').innerHTML  = firstIsGlobal
+      ? '🎤 <span style="color:var(--global2)">First name · Aria\'s side</span>'
+      : '💿 <span style="color:var(--local2)">First name · Cormac\'s side</span>';
+    document.getElementById('headSecond').innerHTML = firstIsGlobal
+      ? '💿 <span style="color:var(--local2)">Middle name · Cormac\'s side</span>'
+      : '🎤 <span style="color:var(--global2)">Middle name · Aria\'s side</span>';
+    document.getElementById('listFirst').innerHTML  = firstPool.map(function(n){return nameCard(n, firstIsGlobal?'g':'l');}).join('');
+    document.getElementById('listSecond').innerHTML = secondPool.map(function(n){return nameCard(n, firstIsGlobal?'l':'g');}).join('');
+    document.getElementById('sexHint').innerHTML = s==='F'
+      ? 'A first name from <b class="g">Aria\'s side</b> the world can already sing, and a middle name from <b class="l">Cormac\'s side</b> that carries home.'
+      : 'A first name from <b class="l">Cormac\'s side</b> that carries home, and a middle name from <b class="g">Aria\'s side</b> the world can sing.';
+    document.getElementById('result').className='result'+(s==='M'?' boy':'');
+    document.getElementById('result').innerHTML='';
+  }
+  function pick(btn){
+    var col=btn.closest('.pcol');
+    col.querySelectorAll('.nbtn').forEach(function(b){ b.classList.remove('gsel','lsel'); });
+    var kind=btn.dataset.kind;
+    btn.classList.add(kind==='g'?'gsel':'lsel');
+    if(col.id==='colFirst') firstPick=btn.dataset.nm; else secondPick=btn.dataset.nm;
+    ping(kind==='g'?'sfx_pick_g':'sfx_pick_l');
+    render();
+  }
+  function render(){
+    var r=document.getElementById('result');
+    if(!firstPick && !secondPick){ r.innerHTML=''; return; }
+    var fn=firstPick||'…', mn=secondPick||'…';
+    var complete = firstPick && secondPick;
+    var meanLine='';
+    if(complete){
+      var m1=meaningOf(fn), m2=meaningOf(mn);
+      meanLine='<div class="rmean"><b>'+fn+'</b> "'+m1+'" &nbsp;·&nbsp; <b>'+mn+'</b> "'+m2+'"</div>';
+    }
+    r.innerHTML='<div class="rlab">the baby\'s song</div>'
+      + '<div class="rname"><span class="fn">'+fn+'</span> <span class="mn">'+mn+'</span></div>'
+      + (complete ? '<div class="rtiny">one from each side, the whole duet in a single name.</div>'
+          + meanLine
+          + '<button class="cert-btn" onclick="openCert()">🎓 Get the certificate</button>' : '');
+    if(complete && !r.dataset.rang){ r.dataset.rang='1'; ping('sfx_resolve'); }
+    if(!complete) r.dataset.rang='';
+  }
+  var _cache={};
+  function ping(name){
+    try{ var a=_cache[name]||(_cache[name]=new Audio('assets/'+name+'.wav')); a.currentTime=0; a.play().catch(function(){}); }catch(e){}
+  }
+
+  /* ── Certificate ── draw the composed name + meanings onto certificate.png ── */
+  var _certBg=null, _fontsReady=false;
+  (function preload(){
+    var img=new Image();
+    img.onload=function(){ _certBg=img; };
+    img.src='assets/certificate.png';
+    if(document.fonts && document.fonts.load){
+      Promise.all([document.fonts.load('700 120px Caveat'), document.fonts.load('italic 30px Fraunces')])
+        .then(function(){_fontsReady=true;}).catch(function(){_fontsReady=true;});
+    } else { _fontsReady=true; }
+  })();
+
+  function drawCert(){
+    var cv=document.getElementById('certCanvas'), ctx=cv.getContext('2d');
+    var W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    if(_certBg){ ctx.drawImage(_certBg,0,0,W,H); }
+    else { ctx.fillStyle='#fdf3ee'; ctx.fillRect(0,0,W,H); }
+    ctx.textAlign='center';
+    var cx=723; // centre of the dashed name line
+    // the composed name, in Caveat, sitting on the dashed line (line at y~413)
+    var full=(firstPick||'')+' '+(secondPick||'');
+    ctx.fillStyle='#6f4a9c';
+    ctx.font='700 118px Caveat, cursive';
+    ctx.fillText(full, cx, 398);
+    // meanings, just under the closing quote (quote ends ~y600)
+    var m1=meaningOf(firstPick), m2=meaningOf(secondPick);
+    ctx.fillStyle='#7a6a8c';
+    ctx.font='italic 27px Fraunces, serif';
+    // keep the meaning line clear of the family art on the right: centre it on the text column
+    ctx.fillText(firstPick+' “'+m1+'”   ·   '+secondPick+' “'+m2+'”', 690, 655);
+  }
+
+  function openCert(){
+    var m=document.getElementById('certModal');
+    m.classList.add('on');
+    var go=function(){ drawCert(); };
+    if(_certBg && _fontsReady){ go(); }
+    else {
+      // wait briefly for bg image + fonts, then draw (and redraw once fonts settle)
+      var tries=0, iv=setInterval(function(){
+        tries++;
+        if((_certBg && _fontsReady) || tries>20){ clearInterval(iv); go(); setTimeout(go,250); }
+      },80);
+    }
+  }
+  function closeCert(){ document.getElementById('certModal').classList.remove('on'); }
+  function downloadCert(){
+    drawCert();
+    var cv=document.getElementById('certCanvas');
+    var fn=((firstPick||'name')+'-'+(secondPick||'')).replace(/[^A-Za-z]/g,'')+'-certificate.png';
+    try{
+      var a=document.createElement('a');
+      a.download=fn; a.href=cv.toDataURL('image/png'); a.click();
+    }catch(e){ window.open(cv.toDataURL('image/png')); }
+  }
+</script>
+</body>
+</html>
