@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Composers — A Duet of Names (full scroll)</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{background:#eef4fb;}
+  .page{display:block; width:100%; border:0;}
+  .page.cover{height:100vh;}
+  .page.score,.page.stage,.page.aria,.page.cormac,.page.quiz,.page.encore,.page.methods{height:100vh; min-height:640px;}
+  @media(max-width:980px),(max-height:640px){ .page.score,.page.stage,.page.aria,.page.cormac,.page.quiz,.page.encore,.page.methods{height:auto; min-height:100vh;} }
+</style>
+</head>
+<body>
+  <iframe class="page cover"   src="cover.html"     title="Cover"  scrolling="no" allow="autoplay"></iframe>
+  <iframe class="page score"   src="score.html"     title="Score"  scrolling="no"></iframe>
+  <iframe class="page stage"   src="orchestra.html" title="Stage"  scrolling="no"></iframe>
+  <iframe class="page aria"    src="aria.html"       title="Aria"   scrolling="no" allow="autoplay"></iframe>
+  <iframe class="page cormac"  src="cormac.html"    title="Cormac" scrolling="no"></iframe>
+  <iframe class="page quiz"    src="quiz.html"      title="Listening Test" scrolling="no" allow="autoplay"></iframe>
+  <iframe class="page encore"  src="encore.html"    title="Encore" scrolling="no" allow="autoplay"></iframe>
+  <iframe class="page methods" src="methods.html"   title="Liner Notes" scrolling="no"></iframe>
+  <script>
+    const [coverF, scoreF, stageF, ariaF, cormacF, quizF, encoreF, methodsF] = document.querySelectorAll('iframe');
+    // simple single-target wiring: every matched link in `frame` scrolls to `target`
+    function link(frame, target, selector){
+      frame.addEventListener('load', () => {
+        try{
+          frame.contentDocument.querySelectorAll(selector).forEach(a=>{
+            a.addEventListener('click', e => { e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); });
+          });
+        }catch(_){}
+      });
+    }
+    // frames with a back + forward link: route by whether the link text says "back"
+    function linkBoth(frame, backTarget, fwdTarget){
+      frame.addEventListener('load', () => {
+        try{
+          frame.contentDocument.querySelectorAll('.foot a').forEach(a=>{
+            a.addEventListener('click', e=>{
+              e.preventDefault();
+              (/back/i.test(a.textContent) ? backTarget : fwdTarget).scrollIntoView({behavior:'smooth'});
+            });
+          });
+        }catch(_){}
+      });
+    }
+    link(coverF,  scoreF,  'a.open-hint');   // cover → score
+    link(scoreF,  stageF,  '.foot a');        // score → stage
+    link(stageF,  ariaF,   '.foot a');        // stage → aria
+    linkBoth(ariaF,   stageF,  cormacF);      // aria: back→stage, forward→cormac
+    linkBoth(cormacF, ariaF,   quizF);        // cormac: back→aria, forward→quiz
+    linkBoth(quizF,   cormacF, encoreF);      // quiz: back→cormac, forward→encore (name the baby)
+    linkBoth(encoreF, quizF,   methodsF);     // encore: back→quiz, forward→methods (liner notes)
+    link(methodsF, encoreF, '.foot a');       // methods: back → encore
+  </script>
+</body>
+</html>
