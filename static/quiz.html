@@ -1,215 +1,498 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Listening Test — One More Round</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#3a4657; --muted:#7a8794; --line:#e8ddcb;
-    --panel:#fdf8ee; --cream:#fbf3d9;
-    --global:#3f8fca; --global2:#2e79ab; --global-soft:#e4f0fa;
-    --local:#8a5bb0; --local2:#6f4a9c; --local-soft:#f1e9fa;
-    --orange:#f0a020; --coral:#e8788c; --gold:#f0b23e; --sage:#3fa787;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  @keyframes babybob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(2deg);}}
-  body{font-family:'Quicksand',sans-serif; color:var(--ink); line-height:1.55;
-    background:
-      radial-gradient(1000px 640px at 8% -5%, #e4f0fa 0%, transparent 55%),
-      radial-gradient(1000px 640px at 96% 4%, #f1e9fa 0%, transparent 55%),
-      linear-gradient(180deg, #eef4fb 0%, #f8f1e3 100%);
-    background-attachment:fixed;}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* floating background notes + now-playing badge (shared) */
-  @keyframes fbob{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-16px) rotate(6deg);}}
-  .notes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
-  .notes span{position:absolute; opacity:.34; animation:fbob 6s infinite ease-in-out;}
-  .now-badge{position:fixed; top:clamp(10px,1.6vh,16px); right:clamp(12px,2vw,20px); z-index:30; display:flex; align-items:center; gap:9px;
-    background:rgba(253,248,238,.92); border:1px solid var(--line); border-radius:999px; padding:6px 15px 6px 12px; cursor:pointer;
-    box-shadow:0 5px 16px rgba(120,150,190,.16); backdrop-filter:blur(4px); user-select:none;}
-  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px; flex:0 0 auto;}
-  .now-badge .eqbars i{width:3px; background:var(--global); border-radius:1px; animation:nbeq .9s ease-in-out infinite;}
-  .now-badge .eqbars i:nth-child(2){animation-delay:.2s; background:var(--local);}
-  .now-badge .eqbars i:nth-child(3){animation-delay:.4s; background:var(--orange);}
-  .now-badge .eqbars i:nth-child(4){animation-delay:.15s; background:var(--coral);}
-  .now-badge.paused .eqbars i{animation-play-state:paused;}
-  .now-badge .nb-txt{font-size:.72rem; font-weight:700; color:var(--ink); line-height:1;}
-  .now-badge .nb-txt small{display:block; font-weight:600; color:var(--muted); font-size:.6rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;}
-  @keyframes nbeq{0%,100%{height:3px;}50%{height:14px;}}
-  @media(max-width:620px){.now-badge{display:none;}}
+body {
+  background: #0a0a0a;
+  font-family: 'Georgia', serif;
+  color: #f0e6d3;
+  min-height: 100vh;
+}
 
-  .stage-wrap{position:relative; z-index:1; min-height:100vh; height:100vh; max-height:100vh; overflow:hidden;
-    display:flex; flex-direction:column; justify-content:center; align-items:center;
-    padding:clamp(12px,2.4vh,24px) clamp(16px,3vw,40px);}
-  .col{width:100%; max-width:1040px; display:grid; grid-template-columns:auto 1fr; gap:clamp(16px,3vw,40px); align-items:center;}
-  @media(max-width:820px){.col{grid-template-columns:1fr; gap:14px; justify-items:center;}}
+/* Floating notes */
+.notes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+.note { position: absolute; font-size: 24px; opacity: 0.12; color: #c9a96e; }
+@media (prefers-reduced-motion: no-preference) {
+  .note { animation: floatUp 9s linear infinite; }
+  @keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0.12; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
+}
+.note:nth-child(1) { left: 5%; animation-delay: 0s; }
+.note:nth-child(2) { left: 18%; animation-delay: 1.5s; }
+.note:nth-child(3) { left: 38%; animation-delay: 3s; }
+.note:nth-child(4) { left: 58%; animation-delay: 4.5s; }
+.note:nth-child(5) { left: 75%; animation-delay: 2s; }
+.note:nth-child(6) { left: 90%; animation-delay: 5.5s; }
 
-  /* baby column — framed as a portrait at the same scale as the parents on the Score sheet */
-  .baby-side{text-align:center; display:flex; flex-direction:column; align-items:center;}
-  .baby-pic{width:clamp(120px,16vh,150px); height:clamp(120px,16vh,150px); border-radius:50%; overflow:hidden;
-    background:var(--cream); box-shadow:0 6px 18px rgba(0,0,0,.16); animation:babybob 3s ease-in-out infinite; display:block;}
-  .baby-pic img{width:100%; height:100%; object-fit:cover; display:block;}
-  .baby-say{margin-top:8px; font-family:'Caveat',cursive; font-size:clamp(1.2rem,2.4vw,1.6rem); color:var(--local2); line-height:1.15; max-width:260px;}
-  .score-pill{margin-top:8px; display:inline-block; background:var(--cream); border:1px solid var(--line); border-radius:999px;
-    padding:5px 15px; font-size:.8rem; font-weight:700; color:var(--ink);}
+/* Now playing bar */
+.now-playing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(201, 169, 110, 0.06);
+  border-bottom: 1px solid rgba(201, 169, 110, 0.12);
+  position: relative;
+  z-index: 1;
+}
+.now-playing .bars { display: flex; gap: 2px; align-items: flex-end; height: 12px; }
+.now-playing .bar { width: 3px; background: #c9a96e; border-radius: 1px; }
+@media (prefers-reduced-motion: no-preference) {
+  .now-playing .bar { animation: barPulse 0.8s ease-in-out infinite alternate; }
+  @keyframes barPulse { 0% { height: 4px; } 100% { height: 12px; } }
+}
+.now-playing .bar:nth-child(1) { height: 6px; animation-delay: 0s; }
+.now-playing .bar:nth-child(2) { height: 10px; animation-delay: 0.15s; }
+.now-playing .bar:nth-child(3) { height: 4px; animation-delay: 0.3s; }
+.now-playing .bar:nth-child(4) { height: 8px; animation-delay: 0.45s; }
+.now-playing span {
+  font-size: 11px;
+  color: #a89070;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
 
-  /* quiz column */
-  .qhead{text-align:left; margin-bottom:clamp(8px,1.4vh,12px);}
-  .qhead .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--global2); font-size:clamp(.82rem,1.5vw,1rem);}
-  .qhead h1{font-family:'Caveat',cursive; font-size:clamp(2rem,4.4vw,3rem); line-height:1; color:var(--ink); margin:1px 0 4px;}
-  .qhead p{color:#4a5568; font-size:clamp(.82rem,1.5vw,.96rem); max-width:520px;}
+/* Layout */
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px 16px;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
-  .quiz-card{background:var(--global-soft); border:1px solid #cfe2f2; border-radius:18px;
-    box-shadow:0 8px 24px rgba(120,150,190,.10); padding:clamp(12px,2vh,18px) clamp(15px,2.4vw,24px);}
-  .qitem + .qitem{border-top:1px dashed #cfe2f2; margin-top:clamp(9px,1.5vh,13px); padding-top:clamp(9px,1.5vh,13px);}
-  .qitem .qlabel{display:flex; align-items:center; gap:8px; margin-bottom:4px;}
-  .qitem .qnum{font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:var(--global2); font-size:.86rem;}
-  .qitem .qmini{font-size:1.1rem;}
-  .qq{color:#3a4657; font-size:clamp(.82rem,1.5vw,.96rem); line-height:1.4;}
-  .qq b{color:var(--ink);}
-  .qopts{display:flex; gap:clamp(7px,1.2vw,11px); flex-wrap:wrap; margin-top:clamp(7px,1.3vh,11px);}
-  .qopt{border:2px solid #cfe2f2; background:#fff; border-radius:999px; padding:7px 17px; cursor:pointer; font:inherit;
-    font-weight:800; color:var(--global2); font-size:clamp(.78rem,1.3vw,.9rem); transition:.18s;}
-  .qopt:hover{transform:translateY(-2px); border-color:var(--global); box-shadow:0 6px 14px rgba(63,143,202,.16);}
-  .qopt:disabled{cursor:default;}
-  .qopt.win{border-color:var(--sage); background:#eaf6ef; color:#2e7d32;}
-  .qopt.lose{border-color:var(--coral); background:#fbe9ee; color:#c04a63;}
-  .qexpl{display:none; margin-top:8px; font-size:clamp(.76rem,1.35vw,.88rem); color:#4a5568; line-height:1.4;}
-  .qexpl.on{display:block;} .qexpl b{color:var(--ink);}
+.card-wrapper {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .foot{grid-column:1/-1; text-align:center; margin-top:clamp(8px,1.6vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
-  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
-  .foot a{font-family:'Caveat',cursive; font-size:1.4rem; text-decoration:none; color:var(--local2);}
-  .foot a.next{color:var(--global2);}
+/* Card header - always visible, never flips */
+.card-header {
+  background: rgba(20, 18, 14, 0.95);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  padding: 28px 24px 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
 
-  @media(max-height:820px), (max-width:820px){
-    .stage-wrap{height:auto; max-height:none; overflow:visible; min-height:100vh;}
-  }
+.vinyl-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #444 18%, #1a1a1a 19%, #1a1a1a 38%, #2a2a2a 39%, #2a2a2a 58%, #1a1a1a 59%);
+  border: 2px solid rgba(201, 169, 110, 0.3);
+  margin: 0 auto 14px;
+  position: relative;
+}
+.vinyl-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #c9a96e;
+}
+
+.card-header .tag {
+  display: inline-block;
+  background: rgba(201, 169, 110, 0.12);
+  color: #c9a96e;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  color: #f0e6d3;
+  margin-bottom: 6px;
+  font-weight: normal;
+}
+
+.card-header p {
+  font-size: 12px;
+  color: #8a7a60;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Flip mechanism */
+.flip-toggle { display: none; }
+
+.flip-area {
+  perspective: 1200px;
+  flex: 1;
+}
+
+.flip-inner {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  transition: transform 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-toggle:checked ~ .card-wrapper .flip-area .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-front, .flip-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 480px;
+  backface-visibility: hidden;
+  background: rgba(20, 18, 14, 0.95);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  border-top: 1px dashed rgba(201, 169, 110, 0.15);
+  border-radius: 0 0 20px 20px;
+  padding: 22px 24px 24px;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+/* Flip button */
+.flip-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #c9a96e, #9a7030);
+  color: #0a0a0a;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.flip-btn:hover { transform: scale(1.04); box-shadow: 0 4px 16px rgba(201, 169, 110, 0.25); }
+
+/* Quiz question blocks */
+.question-block {
+  background: rgba(201, 169, 110, 0.04);
+  border: 1px solid rgba(201, 169, 110, 0.12);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.q-num {
+  font-size: 11px;
+  color: #c9a96e;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+.q-text {
+  font-size: 12.5px;
+  color: #d4c4a8;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.options { display: flex; flex-direction: column; gap: 5px; }
+.opt-radio { display: none; }
+.opt-label {
+  display: block;
+  padding: 8px 14px;
+  background: rgba(201, 169, 110, 0.06);
+  border: 1px solid rgba(201, 169, 110, 0.18);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #c4b494;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.opt-label:hover {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: rgba(201, 169, 110, 0.35);
+}
+.opt-radio:checked + .opt-label {
+  background: rgba(201, 169, 110, 0.2);
+  border-color: #c9a96e;
+  color: #f0e6d3;
+  font-weight: 600;
+}
+
+/* Score bar */
+.score-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px;
+  background: rgba(201, 169, 110, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(201, 169, 110, 0.1);
+}
+.score-bar span { font-size: 13px; color: #c9a96e; }
+
+/* Encore styles */
+.encore-text {
+  font-size: 13px;
+  color: #b0a080;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.gender-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.gender-radio { display: none; }
+.gender-label {
+  flex: 1;
+  text-align: center;
+  padding: 14px;
+  background: rgba(201, 169, 110, 0.06);
+  border: 1px solid rgba(201, 169, 110, 0.18);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.15s ease;
+}
+.gender-label:hover { background: rgba(201, 169, 110, 0.12); }
+.gender-radio:checked + .gender-label {
+  background: rgba(201, 169, 110, 0.2);
+  border-color: #c9a96e;
+}
+
+.name-section { margin-bottom: 14px; }
+.name-section h4 {
+  font-size: 12px;
+  color: #c9a96e;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+.name-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.name-radio { display: none; }
+.name-label {
+  display: block;
+  padding: 10px;
+  background: rgba(201, 169, 110, 0.06);
+  border: 1px solid rgba(201, 169, 110, 0.18);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #c4b494;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.name-label:hover { background: rgba(201, 169, 110, 0.12); border-color: rgba(201, 169, 110, 0.35); }
+.name-radio:checked + .name-label {
+  background: rgba(201, 169, 110, 0.2);
+  border-color: #c9a96e;
+  color: #f0e6d3;
+  font-weight: 600;
+}
+
+/* Certificate box */
+.cert-box {
+  text-align: center;
+  margin-top: 18px;
+  padding: 18px;
+  background: rgba(201, 169, 110, 0.05);
+  border-radius: 14px;
+  border: 1px dashed rgba(201, 169, 110, 0.25);
+}
+.cert-box .lbl { font-size: 10px; color: #8a7a60; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.cert-box .name-display { font-size: 20px; color: #c9a96e; font-style: italic; margin-bottom: 6px; }
+.cert-box .sub { font-size: 11px; color: #555; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 18px;
+  position: relative;
+  z-index: 1;
+}
+.footer span { font-size: 11px; color: #555; }
+.footer a {
+  color: #c9a96e;
+  font-size: 12px;
+  text-decoration: none;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 1060px) {
+  .container { flex-direction: column; align-items: center; }
+  .card-wrapper { width: 100%; max-width: 500px; }
+}
 </style>
 </head>
 <body>
 
 <div class="notes">
-  <span style="top:12%;left:8%;color:#3f8fca;font-size:1.4rem;">♪</span>
-  <span style="top:20%;right:10%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
-  <span style="top:66%;left:5%;color:#f0a020;font-size:1.5rem;animation-delay:1.2s;">♩</span>
-  <span style="top:78%;right:7%;color:#e8788c;font-size:1.3rem;animation-delay:.5s;">♬</span>
-  <span style="top:44%;left:3%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
-  <span style="top:32%;right:4%;color:#f0b23e;font-size:1.2rem;animation-delay:2.3s;">♫</span>
+  <span class="note">♪</span>
+  <span class="note">♫</span>
+  <span class="note">♩</span>
+  <span class="note">♬</span>
+  <span class="note">♪</span>
+  <span class="note">♫</span>
 </div>
 
-<div class="now-badge" onclick="this.classList.toggle('paused')" title="ambient score">
-  <span class="eqbars"><i></i><i></i><i></i><i></i></span>
-  <span class="nb-txt"><small>Now Playing</small>The Listening Test</span>
+<div class="now-playing">
+  <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+  <span>Now Playing</span>
 </div>
 
-<section class="stage-wrap">
-  <div class="col">
+<div class="container">
 
-    <!-- baby, hosting the round -->
-    <div class="baby-side">
-      <div class="baby-pic"><img src="assets/baby_singer.png" alt="The baby, waiting for a name"></div>
-      <div class="baby-say">"Before they name me… can <b>you</b> read the charts?"</div>
-      <div class="score-pill" id="scorePill">🎧 0 / 4 correct</div>
-    </div>
-
-    <!-- the questions -->
-    <div>
-      <div class="qhead">
-        <div class="chapter-tag">~ The Listening Test ~</div>
-        <h1>One More Round</h1>
-        <p>Four quick ones about the songs behind the names. No hints — just what your ear already knows.</p>
+  <!-- LEFT: The Listening Test -->
+  <div style="width:500px;">
+    <input type="checkbox" id="flipQuiz" class="flip-toggle">
+    <div class="card-wrapper">
+      <div class="card-header">
+        <div class="vinyl-icon"></div>
+        <span class="tag">🎧 The Listening Test</span>
+        <h2>~ One More Round ~</h2>
+        <p>Four quick ones about the songs behind the names.<br>No hints — just what your ear already knows.</p>
       </div>
-
-      <div class="quiz-card">
-        <div class="qitem" id="q1">
-          <div class="qlabel"><span class="qmini">😈</span><span class="qnum">Q1</span></div>
-          <div class="qq">One name sat at <b>zero babies a year</b> for decades, then a hit show rebranded the devil as a charming lead and it broke through. Which name?</div>
-          <div class="qopts">
-            <button class="qopt" onclick="answer(this,'q1',0)">Damien</button>
-            <button class="qopt" onclick="answer(this,'q1',1)">Lucifer</button>
-            <button class="qopt" onclick="answer(this,'q1',2)">Judas</button>
+      <div class="flip-area">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="question-block">
+              <div class="q-num">😈 Q1</div>
+              <div class="q-text">One name sat at zero babies a year for decades, then a hit show rebranded the devil as a charming lead and it broke through. Which name?</div>
+              <div class="options">
+                <input type="radio" name="q1" id="q1a" class="opt-radio"><label for="q1a" class="opt-label">Damien</label>
+                <input type="radio" name="q1" id="q1b" class="opt-radio"><label for="q1b" class="opt-label">Lucifer</label>
+                <input type="radio" name="q1" id="q1c" class="opt-radio"><label for="q1c" class="opt-label">Judas</label>
+              </div>
+            </div>
+            <div class="question-block">
+              <div class="q-num">🎬 Q2</div>
+              <div class="q-text">One of these did not exist as a name at all until a TV show invented it. Which one?</div>
+              <div class="options">
+                <input type="radio" name="q2" id="q2a" class="opt-radio"><label for="q2a" class="opt-label">Emma</label>
+                <input type="radio" name="q2" id="q2b" class="opt-radio"><label for="q2b" class="opt-label">Khaleesi</label>
+                <input type="radio" name="q2" id="q2c" class="opt-radio"><label for="q2c" class="opt-label">Oliver</label>
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:16px;">
+              <label for="flipQuiz" class="flip-btn">↻ Flip for Q3 & Q4</label>
+            </div>
           </div>
-          <div class="qexpl" id="q1expl"></div>
-        </div>
-
-        <div class="qitem" id="q2">
-          <div class="qlabel"><span class="qmini">🎬</span><span class="qnum">Q2</span></div>
-          <div class="qq">One of these did <b>not exist as a name at all</b> until a TV show invented it. Which one?</div>
-          <div class="qopts">
-            <button class="qopt" onclick="answer(this,'q2',0)">Emma</button>
-            <button class="qopt" onclick="answer(this,'q2',1)">Khaleesi</button>
-            <button class="qopt" onclick="answer(this,'q2',2)">Oliver</button>
+          <div class="flip-back">
+            <div class="question-block">
+              <div class="q-num">🔊 Q3</div>
+              <div class="q-text">Parents nearly stopped using this name after a talking speaker launched with it in 2014. Which name got overwritten by a gadget?</div>
+              <div class="options">
+                <input type="radio" name="q3" id="q3a" class="opt-radio"><label for="q3a" class="opt-label">Alexa</label>
+                <input type="radio" name="q3" id="q3b" class="opt-radio"><label for="q3b" class="opt-label">Alina</label>
+                <input type="radio" name="q3" id="q3c" class="opt-radio"><label for="q3c" class="opt-label">Alessia</label>
+              </div>
+            </div>
+            <div class="question-block">
+              <div class="q-num">🌍 Q4</div>
+              <div class="q-text">In the 1930s a baby name took about 65 years to spread across the English-speaking world. Today, how long?</div>
+              <div class="options">
+                <input type="radio" name="q4" id="q4a" class="opt-radio"><label for="q4a" class="opt-label">Still ~65 years</label>
+                <input type="radio" name="q4" id="q4b" class="opt-radio"><label for="q4b" class="opt-label">About 40 years</label>
+                <input type="radio" name="q4" id="q4c" class="opt-radio"><label for="q4c" class="opt-label">Under 10 years</label>
+              </div>
+            </div>
+            <div class="score-bar"><span>🎧 Your Score: __ / 4 correct</span></div>
+            <div style="text-align:center; margin-top:14px;">
+              <label for="flipQuiz" class="flip-btn">↻ Flip back to Q1 & Q2</label>
+            </div>
           </div>
-          <div class="qexpl" id="q2expl"></div>
-        </div>
-
-        <div class="qitem" id="q3">
-          <div class="qlabel"><span class="qmini">🔊</span><span class="qnum">Q3</span></div>
-          <div class="qq">Parents nearly <b>stopped</b> using this name after a talking speaker launched with it in 2014. Which name got overwritten by a gadget?</div>
-          <div class="qopts">
-            <button class="qopt" onclick="answer(this,'q3',0)">Alexa</button>
-            <button class="qopt" onclick="answer(this,'q3',1)">Alina</button>
-            <button class="qopt" onclick="answer(this,'q3',2)">Alessia</button>
-          </div>
-          <div class="qexpl" id="q3expl"></div>
-        </div>
-
-        <div class="qitem" id="q4">
-          <div class="qlabel"><span class="qmini">🌍</span><span class="qnum">Q4</span></div>
-          <div class="qq">In the 1930s a baby name took about <b>65 years</b> to spread across the English-speaking world. Today, how long?</div>
-          <div class="qopts">
-            <button class="qopt" onclick="answer(this,'q4',0)">Still ~65 years</button>
-            <button class="qopt" onclick="answer(this,'q4',1)">About 40 years</button>
-            <button class="qopt" onclick="answer(this,'q4',2)">Under 10 years</button>
-          </div>
-          <div class="qexpl" id="q4expl"></div>
         </div>
       </div>
     </div>
-
-    <div class="foot">
-      <span class="pageno">The Listening Test · 5 / 7</span>
-      <a href="cormac.html">↩ back to Side B</a>
-      <a class="next" href="encore.html">now, name the baby →</a>
-    </div>
-
   </div>
-</section>
 
-<script>
-  var QUIZ = {
-    q1:{correct:1, expl:'🎧 <b>Lucifer.</b> For decades it sat at essentially zero, too loaded a name. Then the TV show <em>Lucifer</em> (2016) recast the devil as a charming lead and it broke onto the charts. A hit show can rewrite a name overnight.'},
-    q2:{correct:1, expl:'📺 <b>Khaleesi.</b> Emma and Oliver are centuries-old classics, but Khaleesi did not exist as a name until <em>Game of Thrones</em> minted the title. A pure reference.'},
-    q3:{correct:0, expl:'🔊 <b>Alexa.</b> It was climbing the charts until 2014, when Amazon\'s Echo took the name, and parents dropped it almost overnight (down about 92%). A global name a gadget can overwrite.'},
-    q4:{correct:2, expl:'🌍 <b>Under 10 years.</b> Shared media, from TV to streaming, collapsed the time a name needs to cross the whole Anglosphere, from roughly 65 years down to under 10.'}
-  };
-  var score=0, answered=0;
-  function answer(btn, id, idx){
-    var card=document.getElementById(id);
-    if(card.dataset.done) return;
-    card.dataset.done='1'; answered++;
-    var correct=QUIZ[id].correct;
-    card.querySelectorAll('.qopt').forEach(function(o,i){
-      o.disabled=true;
-      if(i===correct) o.classList.add('win');
-      else if(i===idx) o.classList.add('lose');
-    });
-    var expl=document.getElementById(id+'expl');
-    expl.innerHTML=QUIZ[id].expl; expl.classList.add('on');
-    var right = idx===correct;
-    if(right) score++;
-    ping(right?'sfx_correct':'sfx_wrong');
-    document.getElementById('scorePill').textContent='🎧 '+score+' / 4 correct';
-  }
-  var _cache={};
-  function ping(name){
-    try{ var a=_cache[name]||(_cache[name]=new Audio('assets/'+name+'.wav')); a.currentTime=0; a.play().catch(function(){}); }catch(e){}
-  }
-</script>
+  <!-- RIGHT: The Encore -->
+  <div style="width:500px;">
+    <input type="checkbox" id="flipEncore" class="flip-toggle">
+    <div class="card-wrapper">
+      <div class="card-header">
+        <div class="vinyl-icon"></div>
+        <span class="tag">🎶 The Encore</span>
+        <h2>~ The Name, At Last ~</h2>
+        <p>Aria has her chart-topper. Cormac has his hometown treasure.<br>They stop competing and compose one song together.</p>
+      </div>
+      <div class="flip-area">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <p class="encore-text">Neither is wrong — so they do what composers do with two good melodies: write one song together. Your turn to finish it.</p>
+            <h4 style="font-size:13px; color:#c9a96e; margin-bottom:12px;">🎼 First — is it a boy or a girl?</h4>
+            <div class="gender-row">
+              <input type="radio" name="gender" id="girl" class="gender-radio"><label for="girl" class="gender-label">👧 Girl</label>
+              <input type="radio" name="gender" id="boy" class="gender-radio"><label for="boy" class="gender-label">👦 Boy</label>
+            </div>
+            <p style="font-size:12px; color:#777; line-height:1.5;">Then pick one name from Aria's side and one from Cormac's side. They're both listening.</p>
+            <div style="text-align:center; margin-top:20px;">
+              <label for="flipEncore" class="flip-btn">↻ Flip to compose the name</label>
+            </div>
+          </div>
+          <div class="flip-back">
+            <p style="font-size:12px; color:#888; margin-bottom:14px;">Pick one from each side — they compose a first name and a middle name together.</p>
+            <div class="name-section">
+              <h4>🎵 Aria's Pick (First Name)</h4>
+              <div class="name-grid">
+                <input type="radio" name="aria" id="a1" class="name-radio"><label for="a1" class="name-label">Luna</label>
+                <input type="radio" name="aria" id="a2" class="name-radio"><label for="a2" class="name-label">Elara</label>
+                <input type="radio" name="aria" id="a3" class="name-radio"><label for="a3" class="name-label">Seren</label>
+                <input type="radio" name="aria" id="a4" class="name-radio"><label for="a4" class="name-label">Ivy</label>
+              </div>
+            </div>
+            <div class="name-section">
+              <h4>🎵 Cormac's Pick (Middle Name)</h4>
+              <div class="name-grid">
+                <input type="radio" name="cormac" id="c1" class="name-radio"><label for="c1" class="name-label">Maeve</label>
+                <input type="radio" name="cormac" id="c2" class="name-radio"><label for="c2" class="name-label">Niamh</label>
+                <input type="radio" name="cormac" id="c3" class="name-radio"><label for="c3" class="name-label">Rowan</label>
+                <input type="radio" name="cormac" id="c4" class="name-radio"><label for="c4" class="name-label">Fern</label>
+              </div>
+            </div>
+            <div class="cert-box">
+              <p class="lbl">The Song Title</p>
+              <p class="name-display">_________ _________</p>
+              <p class="sub">⬇ Download certificate when ready</p>
+            </div>
+            <div style="text-align:center; margin-top:14px;">
+              <label for="flipEncore" class="flip-btn">↻ Flip back</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>The Listening Test · 5/7 &nbsp;|&nbsp; The Encore · 6/7</span><br>
+  <a href="https://2026vizon-itahgkzfbygynkxbhaki92.streamlit.app/">🔗 Open full experience in Streamlit →</a>
+</div>
+
 </body>
 </html>
+
