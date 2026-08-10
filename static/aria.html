@@ -39,7 +39,7 @@
   .thesis b{color:var(--global2);}
 
   /* console: [Aria spacer] · channel strip · stage — 3 columns */
-  .console{flex:0 1 auto; max-height:82vh; min-height:0; display:grid;
+  .console{flex:1; min-height:0; display:grid;
     grid-template-columns:clamp(150px,17vw,340px) minmax(220px,290px) 1fr; gap:clamp(16px,2.2vw,32px);
     margin-top:clamp(14px,2.6vh,26px); align-items:stretch;}
   .aria-spacer{}  /* empty; Aria's fixed image sits over this column */
@@ -256,7 +256,7 @@
 <img class="aria-bg" src="assets/aria_cut.png" alt="">
 
 <section class="desk">
-  <div class="wrap" style="display:flex;flex-direction:column;flex:1;min-height:0;justify-content:center;">
+  <div class="wrap" style="display:flex;flex-direction:column;flex:1;min-height:0;">
     <div class="desk-head">
       <div class="chapter-tag">~ Side A · Why Global ~</div>
       <h1 class="title">Aria's Mixing Desk</h1>
