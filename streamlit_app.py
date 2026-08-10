@@ -2,7 +2,7 @@
 The Composers: A Duet of Names — Streamlit wrapper.
 
 The whole experience is a static site: flow.html stitches 7 sheets (cover, score,
-orchestra, aria, cormac, quiz, encore) via iframes, fetches lookup.json, and plays
+orchestra, aria, cormac, quiz) via iframes, fetches lookup.json, and plays
 audio from assets/. Streamlit's static file server exposes ./static as real files
 at /app/static/<path>, so we embed flow.html in a single full-viewport iframe.
 
