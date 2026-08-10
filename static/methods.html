@@ -56,12 +56,12 @@
   .stat .v{font-family:'Fraunces',serif; font-weight:700; font-size:clamp(1rem,1.9vw,1.25rem); color:var(--global2); line-height:1;}
   .stat .l{font-size:.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-top:2px;}
 
-  /* the two of us */
-  .authors{display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.4vw,16px); margin-top:10px;}
+  /* the two of us — small square avatars */
+  .authors{display:flex; justify-content:center; gap:clamp(18px,3vw,34px); margin-top:10px;}
   .author{margin:0; text-align:center;}
-  .author img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:12px;
-    background:var(--cream); box-shadow:0 5px 14px rgba(120,150,190,.16); border:1px solid var(--line); display:block;}
-  .author figcaption{margin-top:6px; font-family:'Caveat',cursive; font-size:clamp(1.1rem,1.8vw,1.35rem); color:var(--local2); line-height:1;}
+  .author img{width:clamp(60px,8vh,84px); height:clamp(60px,8vh,84px); aspect-ratio:1/1; object-fit:cover; border-radius:12px;
+    background:var(--cream); box-shadow:0 5px 14px rgba(120,150,190,.18); border:1px solid var(--line); display:block; margin:0 auto;}
+  .author figcaption{margin-top:5px; font-family:'Caveat',cursive; font-size:clamp(1rem,1.6vw,1.2rem); color:var(--local2); line-height:1;}
 
   .foot{flex:0 0 auto; text-align:center; margin-top:clamp(8px,1.4vh,14px); display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;}
   .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:.82rem;}
@@ -131,11 +131,11 @@
           <!-- the two of us -->
           <div class="authors">
             <figure class="author">
-              <img src="assets/yuktad.png" alt="Yukta">
+              <img src="assets/yuktad.jpg" alt="Yukta">
               <figcaption>Yukta</figcaption>
             </figure>
             <figure class="author">
-              <img src="assets/Vaishupa.png" alt="Vaishnavee">
+              <img src="assets/Vaishupa.jpg" alt="Vaishnavee">
               <figcaption>Vaishnavee</figcaption>
             </figure>
           </div>
