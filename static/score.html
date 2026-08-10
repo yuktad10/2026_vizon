@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Score — A Duet of Names</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3a4657; --muted:#7a8794; --line:#e8ddcb;
+    --bg:#f8f1e3; --panel:#fdf8ee; --cream:#fbf3d9;
+    --global:#3f8fca; --global2:#2e79ab; --global-soft:#e4f0fa;
+    --local:#8a5bb0; --local2:#6f4a9c; --local-soft:#f1e9fa;
+    --orange:#f0a020; --coral:#e8788c; --gold:#f0b23e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Quicksand',sans-serif; color:var(--ink);
+    background:
+      radial-gradient(1100px 700px at 85% -5%, #e4f0fa 0%, transparent 60%),
+      radial-gradient(900px 600px at 5% 12%, #fbf3d9 0%, transparent 55%),
+      linear-gradient(180deg, #f8f1e3 0%, #eef4fb 100%);
+    background-attachment:fixed; line-height:1.5;}
+
+  /* the sheet fills exactly one viewport — no scroll */
+  .sheet{height:100vh; max-height:100vh; width:100%; display:flex; flex-direction:column;
+    padding:clamp(10px,2.4vh,24px) clamp(14px,3vw,30px); overflow:hidden;}
+  .inner{flex:1; max-width:1180px; width:100%; margin:0 auto; display:flex; flex-direction:column; min-height:0; justify-content:center;}
+
+  /* header */
+  .head{text-align:center; flex:0 0 auto;}
+  .chapter-tag{font-family:'Fraunces',serif; font-style:italic; color:var(--orange); font-size:clamp(.82rem,1.5vw,1rem); letter-spacing:.5px;}
+  h1.title{font-family:'Caveat',cursive; font-size:clamp(2rem,4.6vw,3.2rem); line-height:1; margin:1px 0 4px; color:var(--ink);}
+  .lead{color:#4a5568; max-width:760px; margin:0 auto; font-size:clamp(.82rem,1.55vw,1rem); line-height:1.45;}
+  .lead strong{color:var(--ink);}
+
+  /* body grid: metaphor+composers (left) · dial hero (right) */
+  .grid{flex:0 1 auto; max-height:640px; min-height:0; display:grid; grid-template-columns:1fr 1.25fr;
+    gap:clamp(12px,1.8vw,24px); margin-top:clamp(8px,1.6vh,16px); align-items:stretch;}
+  @media(max-width:980px){.grid{grid-template-columns:1fr;}}
+
+  /* ── LEFT: the metaphor + the two composers ── */
+  .col-left{display:flex; flex-direction:column; gap:clamp(8px,1.4vh,14px); min-height:0;}
+
+  .metaphor{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:clamp(12px,1.8vh,18px) clamp(14px,1.6vw,20px); box-shadow:0 6px 20px rgba(120,150,190,.09);}
+  .m-title{font-family:'Fraunces',serif; font-style:italic; color:var(--local2); font-size:clamp(.9rem,1.6vw,1.08rem); text-align:center; margin-bottom:clamp(8px,1.2vh,12px);}
+  .m-row{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:clamp(4px,.7vw,9px); align-items:center;}
+  .m-item{text-align:center;}
+  .m-item .ic{font-size:clamp(1.5rem,3.2vw,2.1rem); line-height:1;}
+  .m-item .k{font-family:'Caveat',cursive; color:var(--orange); font-size:clamp(1.05rem,2vw,1.35rem); line-height:1; margin-top:2px;}
+  .m-item .v{font-weight:700; font-size:clamp(.78rem,1.4vw,.95rem); color:var(--ink); margin-top:1px;}
+  .m-item .d{font-size:clamp(.62rem,1.15vw,.74rem); color:#5a6472; line-height:1.3; margin-top:2px;}
+  .m-plus{font-size:clamp(1.1rem,2.2vw,1.5rem); color:var(--global); font-weight:700;}
+
+  .composers{flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.2vw,14px);}
+  .comp{border-radius:16px; padding:clamp(12px,1.8vh,18px) clamp(8px,1vw,14px); text-align:center;
+    box-shadow:0 8px 22px rgba(120,150,190,.13); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0;}
+  .comp.g{background:linear-gradient(160deg,#eaf4fc,#d6e9f7); border:1px solid #bcdcf1;}
+  .comp.l{background:linear-gradient(160deg,#f3ecfa,#e7d8f5); border:1px solid #d8c2ee;}
+  .comp .face{flex:0 0 auto; width:clamp(90px,15vh,140px); height:clamp(90px,15vh,140px); border-radius:50%; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.16); display:block; background:#fff;}
+  .comp .face img{width:106%; height:106%; object-fit:cover; object-position:center; display:block; margin:-3%;}
+  .comp .role{flex:0 0 auto; font-family:'Fraunces',serif; font-style:italic; font-size:clamp(.6rem,1.15vw,.72rem); letter-spacing:1px; margin-top:8px; font-weight:600; text-transform:uppercase;}
+  .comp.g .role{color:var(--global2);} .comp.l .role{color:var(--local2);}
+  .comp .nm{flex:0 0 auto; font-family:'Caveat',cursive; font-size:clamp(1.6rem,3.4vw,2.3rem); line-height:1; margin:2px 0 0;}
+  .comp.g .nm{color:var(--global2);} .comp.l .nm{color:var(--local2);}
+  .comp .cry{flex:0 0 auto; display:flex; align-items:center; font-style:italic; color:#4a5568; font-size:clamp(.7rem,1.35vw,.85rem); margin-top:6px; line-height:1.35;}
+
+  /* ── RIGHT: the Countryness Dial hero ── */
+  .col-right{background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:clamp(12px,1.8vh,20px) clamp(14px,1.8vw,24px); box-shadow:0 10px 28px rgba(120,150,190,.14);
+    display:flex; flex-direction:column; min-height:0;}
+  .dial-head{text-align:center; flex:0 0 auto;}
+  .dial-kicker{font-size:clamp(.6rem,1.1vw,.7rem); letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .dial-title{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(1.1rem,2.3vw,1.5rem); color:var(--local2); line-height:1.1; margin:2px 0 4px;}
+  .dial-sub{font-size:clamp(.72rem,1.35vw,.86rem); color:#4a5568; line-height:1.4; max-width:520px; margin:0 auto;}
+  .dial-sub b{color:var(--ink);}
+
+  /* plain-english formula */
+  .formula{flex:0 0 auto; background:var(--global-soft); border:1px solid #cfe2f2; border-radius:12px;
+    padding:clamp(9px,1.5vh,14px) clamp(10px,1.4vw,16px); margin:clamp(8px,1.4vh,14px) 0; text-align:center;}
+  .f-eq{display:flex; align-items:center; justify-content:center; gap:clamp(8px,1.4vw,14px); flex-wrap:wrap;}
+  .f-word{font-family:'Fraunces',serif; font-style:italic; color:var(--local2); font-size:clamp(.95rem,1.9vw,1.2rem);}
+  .f-eqsign{font-size:clamp(1.1rem,2vw,1.4rem); color:var(--ink);}
+  .frac{display:inline-flex; flex-direction:column; align-items:center;}
+  .frac .num,.frac .den{padding:clamp(3px,.6vh,5px) 4px; font-size:clamp(.72rem,1.35vw,.86rem); font-weight:700; line-height:1.2;}
+  .frac .num{color:var(--global2);} .frac .den{color:var(--coral);}
+  .frac .bar{width:100%; height:2px; background:var(--ink);}
+  .f-hint{font-size:clamp(.64rem,1.2vw,.76rem); color:var(--muted); font-style:italic; margin-top:6px;}
+
+  /* the visual dial gauge */
+  .gauge-wrap{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:clamp(4px,.8vh,8px);}
+  .gauge{width:100%; max-width:440px; height:auto;}
+  #needle{transition:transform .55s cubic-bezier(.34,1.56,.64,1);}   /* springy needle swing */
+  .gauge-ends{width:100%; max-width:440px; display:flex; justify-content:space-between; font-size:clamp(.64rem,1.2vw,.76rem);}
+  .gauge-ends .ge{text-align:center; line-height:1.25;}
+  .gauge-ends .ge .big{font-family:'Caveat',cursive; font-size:clamp(1rem,1.9vw,1.3rem);}
+  .gauge-ends .ge.lo .big{color:var(--global2);} .gauge-ends .ge.hi .big{color:var(--local2);}
+  .gauge-ends .ge small{color:var(--muted); display:block;}
+
+  /* the reading scale — now interactive */
+  .scale{flex:0 0 auto; display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(4px,.7vw,8px); margin-top:clamp(8px,1.4vh,14px);}
+  .sc{border-radius:10px; padding:clamp(6px,1.1vh,10px) 4px; text-align:center; border:2px solid var(--line); background:#fff;
+    cursor:pointer; transition:box-shadow .18s ease, border-color .18s ease, background .18s ease; position:relative;}
+  .sc:hover, .sc.active{box-shadow:0 8px 18px rgba(120,150,190,.22); background:#fbfdff;}
+  .sc.active{border-color:#b7c6da;}
+  .sc .em{font-size:clamp(1rem,1.9vw,1.25rem); line-height:1;}
+  .sc .lb{font-size:clamp(.58rem,1.05vw,.68rem); font-weight:800; margin-top:3px;}
+  .sc .rg{font-size:clamp(.56rem,1vw,.66rem); color:var(--muted); font-family:'Courier New',monospace; margin-top:1px;}
+  .sc .mn{font-size:clamp(.54rem,1vw,.63rem); color:#5a6472; line-height:1.25; margin-top:3px;}
+
+  /* floating background notes + now-playing badge (shared) */
+  @keyframes fbob{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-16px) rotate(6deg);}}
+  .notes{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .notes span{position:absolute; opacity:.4; animation:fbob 6s infinite ease-in-out;}
+  .sheet{position:relative; z-index:1;}
+  .now-badge{position:fixed; top:clamp(10px,1.6vh,16px); right:clamp(12px,2vw,20px); z-index:30; display:flex; align-items:center; gap:9px;
+    background:rgba(253,248,238,.92); border:1px solid var(--line); border-radius:999px; padding:6px 15px 6px 12px; cursor:pointer;
+    box-shadow:0 5px 16px rgba(120,150,190,.16); backdrop-filter:blur(4px); user-select:none;}
+  .now-badge .eqbars{display:flex; gap:2px; align-items:flex-end; height:14px; flex:0 0 auto;}
+  .now-badge .eqbars i{width:3px; background:var(--global); border-radius:1px; animation:nbeq .9s ease-in-out infinite;}
+  .now-badge .eqbars i:nth-child(2){animation-delay:.2s; background:var(--local);}
+  .now-badge .eqbars i:nth-child(3){animation-delay:.4s; background:var(--orange);}
+  .now-badge .eqbars i:nth-child(4){animation-delay:.15s; background:var(--coral);}
+  .now-badge.paused .eqbars i{animation-play-state:paused;}
+  .now-badge .nb-txt{font-size:.72rem; font-weight:700; color:var(--ink); line-height:1;}
+  .now-badge .nb-txt small{display:block; font-weight:600; color:var(--muted); font-size:.6rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;}
+  @keyframes nbeq{0%,100%{height:3px;}50%{height:14px;}}
+  @media(max-width:620px){.now-badge{display:none;}}
+
+  /* footer */
+  .foot{flex:0 0 auto; text-align:center; margin-top:clamp(8px,1.4vh,14px); display:flex; align-items:center; justify-content:center; gap:16px;}
+  .foot a{font-family:'Caveat',cursive; font-size:clamp(1.2rem,2.4vw,1.6rem); text-decoration:none; color:var(--global2);}
+  .foot .pageno{font-family:'Fraunces',serif; font-style:italic; color:var(--muted); font-size:clamp(.7rem,1.3vw,.82rem);}
+
+  /* fallback for short/!fit screens: allow scroll rather than clip */
+  @media (max-height:560px), (max-width:820px){
+    .sheet{height:auto; max-height:none; overflow:visible;}
+    .grid{grid-template-columns:1fr;}
+    body{line-height:1.55;}
+  }
+</style>
+</head>
+<body>
+<div class="notes">
+  <span style="top:12%;left:5%;color:#f0a020;font-size:1.5rem;">♪</span>
+  <span style="top:22%;right:7%;color:#8a5bb0;font-size:1.4rem;animation-delay:.8s;">♫</span>
+  <span style="top:66%;left:4%;color:#4a9bd4;font-size:1.6rem;animation-delay:1.2s;">♩</span>
+  <span style="top:78%;right:6%;color:#e8788c;font-size:1.4rem;animation-delay:.5s;">♬</span>
+  <span style="top:44%;left:2%;color:#3fa787;font-size:1.3rem;animation-delay:1.8s;">♪</span>
+  <span style="top:88%;left:48%;color:#f0a020;font-size:1.3rem;animation-delay:2.3s;">♫</span>
+</div>
+<div class="now-badge" onclick="this.classList.toggle('paused')" title="ambient score">
+  <span class="eqbars"><i></i><i></i><i></i><i></i></span>
+  <span class="nb-txt"><small>Now Playing</small>The Score</span>
+</div>
+<section class="sheet">
+  <div class="inner">
+
+    <!-- ── header ── -->
+    <div class="head">
+      <div class="chapter-tag">~ The Score ~</div>
+      <h1 class="title">Every Name Is a Song</h1>
+      <p class="lead">Every name is a song waiting to be heard. Some become <strong>global hits</strong>, sung across the world. Others become <strong>treasured local classics</strong>, loved only by the people closest to home. Today, a baby is about to receive their very first song. <strong>What should it be?</strong></p>
+    </div>
+
+    <div class="grid">
+      <!-- ══ LEFT: metaphor + composers ══ -->
+      <div class="col-left">
+        <div class="metaphor">
+          <div class="m-title">🎼 The metaphor, in one line</div>
+          <div class="m-row">
+            <div class="m-item"><div class="ic">🎼</div><div class="k">the composers</div><div class="v">Two Parents</div><div class="d">write the song</div></div>
+            <div class="m-plus">＋</div>
+            <div class="m-item"><div class="ic">🎵</div><div class="k">the song</div><div class="v">The Name</div><div class="d">released to the world</div></div>
+            <div class="m-plus">＋</div>
+            <div class="m-item"><div class="ic">🎻</div><div class="k">the orchestra</div><div class="v">8 Countries</div><div class="d">who plays it, and where</div></div>
+          </div>
+        </div>
+
+        <div class="composers">
+          <div class="comp g">
+            <div class="face"><img src="assets/mom.png" alt="Aria, the global voice"></div>
+            <div class="role">The Global Voice</div>
+            <div class="nm">Aria</div>
+            <div class="cry">"Name them something the whole world already sings."</div>
+          </div>
+          <div class="comp l">
+            <div class="face"><img src="assets/dad.png" alt="Cormac, the local voice"></div>
+            <div class="role">The Local Voice</div>
+            <div class="nm">Cormac</div>
+            <div class="cry">"Name them something home will hold close."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RIGHT: the Countryness Dial hero ══ -->
+      <div class="col-right">
+        <div class="dial-head">
+          <div class="dial-kicker">🎚️ Your lens for reading every name ahead</div>
+          <div class="dial-title">The Countryness Dial</div>
+          <div class="dial-sub">One number that tells <b>you</b> whether a name is native or global.</div>
+        </div>
+
+        <div class="formula">
+          <div class="f-eq">
+            <span class="f-word">Countryness</span>
+            <span class="f-eqsign">=</span>
+            <span class="frac">
+              <span class="num">proportion of the name in its origin country 🏠</span>
+              <span class="bar"></span>
+              <span class="den">avg. proportion across the other countries 🌍</span>
+            </span>
+          </div>
+          <div class="f-hint">Equal everywhere → <b>≈ 1</b>. &nbsp;·&nbsp; Home only → <b>into the thousands</b>.</div>
+        </div>
+
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 440 210" aria-label="Countryness dial from global to local">
+            <defs>
+              <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#3f8fca"/>
+                <stop offset=".5" stop-color="#f0a020"/>
+                <stop offset="1" stop-color="#8a5bb0"/>
+              </linearGradient>
+            </defs>
+            <!-- semicircle arc: centre (220,185), radius 175 -->
+            <path d="M 45 185 A 175 175 0 0 1 395 185" fill="none" stroke="url(#arc)" stroke-width="15" stroke-linecap="round"/>
+            <!-- ticks + labels along the arc -->
+            <g font-family="Quicksand, sans-serif" font-weight="700" fill="#3a4657" font-size="13" text-anchor="middle">
+              <text x="45"  y="200">1</text>
+              <text x="103" y="72">10</text>
+              <text x="220" y="30">100</text>
+              <text x="337" y="72">1k</text>
+              <text x="395" y="200">1k+</text>
+            </g>
+            <!-- needle: JS swings it to whichever level is hovered -->
+            <g id="needle" transform="rotate(-72 220 185)">
+              <line x1="220" y1="185" x2="220" y2="40" stroke="#3a4657" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="220" cy="185" r="10" fill="#3a4657"/>
+              <circle cx="220" cy="185" r="4.5" fill="#fdf8ee"/>
+            </g>
+          </svg>
+          <div class="gauge-ends">
+            <div class="ge lo"><span class="big">Global Hit</span><small>sung the same in all 8 countries</small></div>
+            <div class="ge hi"><span class="big">Local Treasure</span><small>belongs to a single home</small></div>
+          </div>
+        </div>
+
+        <div class="scale" id="scale">
+          <div class="sc" data-angle="-72"  data-label="Global"      data-note="Shared everywhere — no single home."><div class="em">✅</div><div class="lb" style="color:#3fa787;">Global</div><div class="rg">&lt; 5</div><div class="mn">Shared, no home</div></div>
+          <div class="sc" data-angle="-36"  data-label="Leaning"     data-note="Starting to concentrate in one place."><div class="em">⚠️</div><div class="lb" style="color:#d9a020;">Leaning</div><div class="rg">5–10</div><div class="mn">Concentrating</div></div>
+          <div class="sc" data-angle="0"    data-label="Locked"      data-note="Clearly belongs to one country."><div class="em">🔒</div><div class="lb" style="color:#d9683f;">Locked</div><div class="rg">10–100</div><div class="mn">One country's</div></div>
+          <div class="sc" data-angle="36"   data-label="Very Locked" data-note="Barely exists outside its home."><div class="em">🔐</div><div class="lb" style="color:#c94f6d;">Very Locked</div><div class="rg">100–1k</div><div class="mn">Barely elsewhere</div></div>
+          <div class="sc" data-angle="72"   data-label="Password"    data-note="A cultural password — home only."><div class="em">🚫</div><div class="lb" style="color:#b23a5a;">Password</div><div class="rg">1k+</div><div class="mn">Home only</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── footer ── -->
+    <div class="foot">
+      <span class="pageno">The Score · 1 / 8</span>
+      <a href="orchestra.html">Next, meet the orchestra →</a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // Interactive dial: hover/tap a level → swing the needle to that zone + highlight the card.
+  (function(){
+    var needle  = document.getElementById('needle');
+    var cards   = Array.prototype.slice.call(document.querySelectorAll('#scale .sc'));
+    var restAngle = -72;                 // needle rests toward the global end
+
+    function setNeedle(angle){ needle.setAttribute('transform', 'rotate(' + angle + ' 220 185)'); }
+
+    function activate(card){
+      cards.forEach(function(c){ c.classList.remove('active'); });
+      card.classList.add('active');
+      setNeedle(parseFloat(card.getAttribute('data-angle')));
+    }
+    function clearAll(){
+      cards.forEach(function(c){ c.classList.remove('active'); });
+      setNeedle(restAngle);
+    }
+
+    cards.forEach(function(card){
+      card.addEventListener('mouseenter', function(){ activate(card); });
+      card.addEventListener('click',      function(){ activate(card); });   // tap on touch
+      card.addEventListener('mouseleave', clearAll);
+    });
+    // leaving the whole scale row resets the dial
+    document.getElementById('scale').addEventListener('mouseleave', clearAll);
+  })();
+</script>
+</body>
+</html>
